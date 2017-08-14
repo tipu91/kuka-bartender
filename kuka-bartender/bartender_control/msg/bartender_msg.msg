@@ -1,0 +1,9 @@
+int16 id
+geometry_msgs/Pose des_frame
+float64 exe_time
+bool arrived
+float64 gravity_task_gain
+float64 position_task_gain
+bool multi_task
+bool do_rot_z
+float64 rot_z

@@ -1,0 +1,110 @@
+#ifndef BARTENDER_MANAGER_H
+#define BARTENDER_MANAGER_H
+
+#include <sensor_msgs/JointState.h>
+#include "std_msgs/Float64.h"
+#include "std_msgs/Bool.h"
+#include <ros/node_handle.h>
+#include <ros/ros.h>
+#include <stdio.h>
+#include <iostream>
+#include <string>
+#include <vector>
+#include <math.h>
+#include <kdl/kdl.hpp>
+#include <kdl/frames.hpp>
+#include <kdl/frames_io.hpp>
+#include <kdl_parser/kdl_parser.hpp>
+#include <boost/scoped_ptr.hpp>
+#include <vector>
+#include <bartender_control/bartender_msg.h> 
+#include <Eigen/LU>
+#include <XmlRpcValue.h>
+#include "std_msgs/Bool.h"
+#include "std_msgs/Float64MultiArray.h"
+
+#define		link7_to_palm	0.15		// m
+#define 	pouring_angle	(M_PI/2)	// rad
+
+#define _USE_MATH_DEFINES
+
+class BartenderManager {
+
+	public:
+	    BartenderManager();
+	    ~BartenderManager();
+
+	    void checkCallback_right(const std_msgs::Float64MultiArray &msg_err);
+	    void checkCallback_left(const std_msgs::Float64MultiArray &msg_err);
+	    void checkCallback_right_initial(const std_msgs::Float64MultiArray &msg_init);
+	    void checkCallback_left_initial(const std_msgs::Float64MultiArray &msg_init);
+		double *EulerToQuaternion(float R, float P, float Y);
+		void DrinkSelection();
+		void Publish();
+		void Init();
+		void Grasping(std::vector<int> closure_value, std::string s);
+		void OpeningHand(std::vector<int> opening_value, std::string s);
+		void ToGlass();
+		void Pouring();
+		void Stop_Pouring();
+		void Dub();
+		void InitialPosition();
+		float Mod_Error(KDL::Frame err);
+		bool compare_error(double err[6]);
+
+		bool BottleGrasping = false;
+		bool ActionPouring = false;
+		bool Init_cond = false;
+
+		bartender_control::bartender_msg msg_right;
+		bartender_control::bartender_msg msg_left;
+
+		KDL::Frame x_err_right;
+		KDL::Frame x_err_left;
+
+		KDL::Frame x_err_compare;
+
+		KDL::Frame x_right_initial;
+		KDL::Frame x_left_initial;
+		
+		ros::NodeHandle n_;
+
+		double threshold = 0.02;
+		double threshold_rot = 0.1;
+
+		double x_err_right_v[6];
+		double x_err_left_v[6];
+
+		int print;
+
+		std::vector<double> vodka_;
+
+	private:
+
+		ros::Publisher pub_bartender_cmd_right;
+		ros::Publisher pub_bartender_cmd_left;
+
+		ros::Publisher joint_pub_l;
+		ros::Publisher joint_pub_r;
+		
+		ros::Subscriber sub_bartender_err_right;
+		ros::Subscriber sub_bartender_err_left;
+
+		ros::Subscriber sub_bartender_init_right;
+		ros::Subscriber sub_bartender_init_left;
+
+		KDL::Frame x_;
+
+		KDL::Frame x_bottle;
+		KDL::Frame bottle_right, bottle_left;
+
+		geometry_msgs::Pose pose_rot_;
+
+		std::map<std::string,KDL::Frame > bottle;	//Positions array: the first fild is the name (STRING), second is the position (VECTOR) 
+
+		float Z1_eul_bott, Y_eul_bott, Z2_eul_bott;
+		double *q_bottle, *q_err_right, *q_err_left, *q_init_right, *q_init_left;
+
+	};
+
+#endif
