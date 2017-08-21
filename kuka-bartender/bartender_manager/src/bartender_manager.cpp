@@ -56,11 +56,14 @@ void BartenderManager::checkCallback_right(const std_msgs::Float64MultiArray & m
     
     for(int i=0; i<6; i++) x_err_right_v[i] = msg_err.data[i];
 
-    x_err_right.p(0) = msg_err.data[0];
-    x_err_right.p(1) = msg_err.data[1];
-    x_err_right.p(2) = msg_err.data[2];
+    error_right[0] = msg_err.data[0];
+    error_right[1] = msg_err.data[1];
+    error_right[2] = msg_err.data[2];
+    error_right[3] = msg_err.data[3];
+    error_right[4] = msg_err.data[4];
+    error_right[5] = msg_err.data[5];
 
-    x_err_right.M = KDL::Rotation::EulerZYX(msg_err.data[3], msg_err.data[4], msg_err.data[5]);
+    // x_err_right.M = KDL::Rotation::EulerZYX(msg_err.data[3], msg_err.data[4], msg_err.data[5]);
 
 }
 
@@ -69,11 +72,14 @@ void BartenderManager::checkCallback_left(const std_msgs::Float64MultiArray & ms
     
     for(int i=0; i<6; i++) x_err_left_v[i] = msg_err.data[i];
 
-    x_err_left.p(0) = msg_err.data[0];
-    x_err_left.p(1) = msg_err.data[1];
-    x_err_left.p(2) = msg_err.data[2];
+    error_left[0] = msg_err.data[0];
+    error_left[1] = msg_err.data[1];
+    error_left[2] = msg_err.data[2];
+    error_left[3] = msg_err.data[3];
+    error_left[4] = msg_err.data[4];
+    error_left[5] = msg_err.data[5];
 
-    x_err_left.M = KDL::Rotation::EulerZYX(msg_err.data[3], msg_err.data[4], msg_err.data[5]);
+    // x_err_left.M = KDL::Rotation::EulerZYX(msg_err.data[3], msg_err.data[4], msg_err.data[5]);
 
 }
 
@@ -95,19 +101,19 @@ void BartenderManager::checkCallback_left_initial(const geometry_msgs::Pose::Con
 void BartenderManager::Init ()
 {
 	//***********************This piece of code is for wait the real transforms*******************************
-	try{
+	/*try{
 	  listener.waitForTransform( "world_link", "world",ros::Time::now(), ros::Duration(3));
 	  listener.lookupTransform( "world_link", "world", ros::Time(0), fake);
 	}
 	catch (tf::TransformException ex){
 	  ROS_ERROR("%s",ex.what());
 	  ros::Duration(1.0).sleep();
-	}
+	}*/
 	//*********************************************************************************************************
 	
 	try{
-	  listener.waitForTransform( "world_link", "vodka",ros::Time::now(), ros::Duration(3));
-	  listener.lookupTransform( "world_link", "vodka", ros::Time(0), world_T_vodka);
+	  listener.waitForTransform( "bartender_anchor", "vodka",ros::Time::now(), ros::Duration(3));
+	  listener.lookupTransform( "bartender_anchor", "vodka", ros::Time(0), world_T_vodka);
 	  
 	  vodka.position.x = world_T_vodka.getOrigin().getX(); 
 	  vodka.position.y = world_T_vodka.getOrigin().getY(); 
@@ -120,8 +126,8 @@ void BartenderManager::Init ()
 	}
 	
 	try{
-	  listener.waitForTransform( "world_link","rum", ros::Time::now(), ros::Duration(3));
-	  listener.lookupTransform( "world_link", "rum", ros::Time(0), world_T_rum);
+	  listener.waitForTransform( "bartender_anchor","rum", ros::Time::now(), ros::Duration(3));
+	  listener.lookupTransform( "bartender_anchor", "rum", ros::Time(0), world_T_rum);
 	  
 	  rum.position.x = world_T_rum.getOrigin().getX(); 
 	  rum.position.y = world_T_rum.getOrigin().getY(); 
@@ -135,8 +141,8 @@ void BartenderManager::Init ()
 	
 	try{
 	  
-	  listener.waitForTransform( "world_link", "coca", ros::Time::now(), ros::Duration(3));
-	  listener.lookupTransform( "world_link", "coca", ros::Time(0), world_T_coca);
+	  listener.waitForTransform( "bartender_anchor", "coca", ros::Time::now(), ros::Duration(3));
+	  listener.lookupTransform( "bartender_anchor", "coca", ros::Time(0), world_T_coca);
 	  
 	  coca.position.x = world_T_coca.getOrigin().getX(); 
 	  coca.position.y = world_T_coca.getOrigin().getY(); 
@@ -150,8 +156,8 @@ void BartenderManager::Init ()
 	
 	try{
 	  
-	  listener.waitForTransform( "world_link", "lemon", ros::Time::now(), ros::Duration(3));
-	  listener.lookupTransform( "world_link", "lemon", ros::Time(0), world_T_lemon);
+	  listener.waitForTransform( "bartender_anchor", "lemon", ros::Time::now(), ros::Duration(3));
+	  listener.lookupTransform( "bartender_anchor", "lemon", ros::Time(0), world_T_lemon);
 	  
 	  lemon.position.x = world_T_lemon.getOrigin().getX(); 
 	  lemon.position.y = world_T_lemon.getOrigin().getY(); 
@@ -165,8 +171,8 @@ void BartenderManager::Init ()
 	
 	try{
 	  
-	  listener.waitForTransform( "world_link", "glass", ros::Time::now(), ros::Duration(3));
-	  listener.lookupTransform( "world_link", "glass", ros::Time(0), world_T_glass);
+	  listener.waitForTransform( "bartender_anchor", "glass", ros::Time::now(), ros::Duration(3));
+	  listener.lookupTransform( "bartender_anchor", "glass", ros::Time(0), world_T_glass);
 	  
 	  glass.position.x = world_T_glass.getOrigin().getX(); 
 	  glass.position.y = world_T_glass.getOrigin().getY(); 

@@ -23,6 +23,10 @@ int main(int argc, char **argv)
 	s_l = "left";
 	s_r = "right";
 
+	// wait for tf service
+	ros::spinOnce();
+	usleep(1000000);
+	
 	manager.Init();
 
 	bool finished = false;
@@ -54,7 +58,7 @@ int main(int argc, char **argv)
 			// ROS_INFO("errori lineari DX: %f | SX: %f", manager.error_lin_right, manager.error_lin_left);
 			
 			// if ( manager.compare_error(manager.error_lin_right) && !manager.msg_right.arrived )
-			if ( manager.compare_error(manager.x_err_right_v) && !manager.msg_right.arrived )
+			if ( manager.compare_error(manager.error_right) && !manager.msg_right.arrived )
 			{	
 				ROS_INFO("DESTRO arrivato alla bottiglia!!");
 				// manager.Grasping(closure_value, s_r);
@@ -62,7 +66,7 @@ int main(int argc, char **argv)
 				manager.msg_right.arrived = true;
 			}
 			// if ( manager.compare_error(manager.error_lin_left) && !manager.msg_left.arrived )
-			if ( manager.compare_error(manager.x_err_left_v) && !manager.msg_left.arrived )
+			if ( manager.compare_error(manager.error_left) && !manager.msg_left.arrived )
 			{	
 				ROS_INFO("SINISTRO arrivato alla bottiglia!!");
 				// manager.Grasping(closure_value, s_l);	

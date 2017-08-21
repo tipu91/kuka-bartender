@@ -7,10 +7,10 @@ find_package(catkin REQUIRED COMPONENTS
 	message_generation 
 	lwr_controllers
 	dynamic_reconfigure
-  controller_interface
+	controller_interface
 )
 
-add_definitions (-fpermissive -std=c++11)
+add_definitions (-std=c++11)
 
 include_directories(include ${Boost_INCLUDE_DIR} ${catkin_INCLUDE_DIRS})
 
@@ -20,6 +20,11 @@ add_message_files(
   FILES
   bartender_msg.msg
 )
+
+## Generate dynamic reconfigure parameters in the 'cfg' folder
+##generate_dynamic_reconfigure_options(
+##    cfg/controller.cfg
+##)
 
 generate_messages(
   DEPENDENCIES
@@ -43,6 +48,7 @@ add_library(${PROJECT_NAME}
   src/one_task_inverse_kinematics.cpp
 )
 
+# add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}_gencfg ${PROJECT_NAME}_gencpp)
 add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}_gencpp)
 
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
@@ -57,5 +63,5 @@ install(TARGETS ${PROJECT_NAME}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
   )
 
-install(FILES bartender_conrol_plugins.xml
+install(FILES bartender_control_plugins.xml
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})

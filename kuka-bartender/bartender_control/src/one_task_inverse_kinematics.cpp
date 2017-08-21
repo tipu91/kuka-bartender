@@ -16,6 +16,10 @@ namespace bartender_control
     OneTaskInverseKinematics::OneTaskInverseKinematics():pnh("~") {
 	  pnh.param<std::string>("ns_arm", ns_param, "none_ns");
 	  pnh.param<std::string>("class", controller,"bartender_control");
+	  
+	  /*f = boost::bind(&OneTaskInverseKinematics::config_callback, this, _1, _2);   
+	  server.setCallback(f);*/
+	  
     }	//costruttore
     
     OneTaskInverseKinematics::~OneTaskInverseKinematics() {}	//distruttore
@@ -29,9 +33,7 @@ namespace bartender_control
         }
 
         cout << "debug: INIT function" << endl;
-	
-	f = boost::bind(&OneTaskInverseKinematics::config_callback, this, _1, _2);   
-	server.setCallback(f);
+
 	 
 	 
         jnt_to_jac_solver_.reset(new KDL::ChainJntToJacSolver(kdl_chain_));
@@ -68,14 +70,40 @@ namespace bartender_control
 	pub_pose = nh_.advertise<geometry_msgs::PoseStamped>("position", 250);
 
         sub_bartender_cmd = nh_.subscribe("command", 250, &OneTaskInverseKinematics::command, this);
+	//sub_bartender_tf = nh_.subscribe("/tf", 250, &OneTaskInverseKinematics::TFCallback, this);
 
 	x_error.resize(6);
+	
+	//***************************************************************//
+	alpha1 = 8;
+	alpha2 = 0.4;
+	second_task = true;
 	
         return true;
     }
     
+    static void toEulerianAngle(geometry_msgs::PoseStamped& q, double& roll, double& pitch, double& yaw)
+    {
+	    double ysqr = q.pose.orientation.y * q.pose.orientation.y;
+
+	    // roll (x-axis rotation)
+	    double t0 = +2.0 * (q.pose.orientation.w * q.pose.orientation.x + q.pose.orientation.y * q.pose.orientation.z);
+	    double t1 = +1.0 - 2.0 * (q.pose.orientation.x * q.pose.orientation.x + ysqr);
+	    roll = std::atan2(t0, t1);
+
+	    // pitch (y-axis rotation)
+	    double t2 = +2.0 * (q.pose.orientation.w * q.pose.orientation.y - q.pose.orientation.z * q.pose.orientation.x);
+	    t2 = ((t2 > 1.0) ? 1.0 : t2);
+	    t2 = ((t2 < -1.0) ? -1.0 : t2);
+	    pitch = std::asin(t2);
+
+	    // yaw (z-axis rotation)
+	    double t3 = +2.0 * (q.pose.orientation.w * q.pose.orientation.z + q.pose.orientation.x * q.pose.orientation.y);
+	    double t4 = +1.0 - 2.0 * (ysqr + q.pose.orientation.z * q.pose.orientation.z);  
+	    yaw = std::atan2(t3, t4);
+    }
     
-  void OneTaskInverseKinematics::config_callback(bartender_manager::managerConfig& config, uint32_t level)
+  /*void OneTaskInverseKinematics::config_callback(bartender_control::controlConfig& config, uint32_t level)
   {
       // controller proportional constants
       ROS_INFO("Reconfigure Request");
@@ -87,7 +115,7 @@ namespace bartender_control
       ROS_INFO("ALPHA 1 = %f", alpha1);
       ROS_INFO("ALPHA 2 = %f", alpha2);
       ROS_INFO("Second task = %s", bartender_control::OneTaskInverseKinematics::BoolToString(second_task));
-  }
+  }*/
 
     void OneTaskInverseKinematics::FrameToPose(KDL::Frame &frame, geometry_msgs::PoseStamped &pose)
     {
@@ -109,59 +137,39 @@ namespace bartender_control
       return;
     }
     
-    bool OneTaskInverseKinematics::getCurrentPosition()
-{
-
-	/*try
-	{
-	    listener.waitForTransform( goal_ref, "EE", ros::Time::now(), ros::Duration(0.25));
-	    listener.lookupTransform( goal_ref, "EE", ros::Time(0), Goal_T_Ee); 
-	}
-	catch (tf::TransformException ex)
-	{
-	    ROS_ERROR("%s",ex.what());               
-	    return false;
-	}
-	
-	x_pose.pose.position.x = Goal_T_Ee.getOrigin().getX(); 
-	x_pose.pose.position.y = Goal_T_Ee.getOrigin().getY(); 
-	x_pose.pose.position.z = Goal_T_Ee.getOrigin().getZ();
-	tf::quaternionTFToMsg(Goal_T_Ee.getRotation(), x_pose.pose.orientation);
-	
-	x_pose.header.stamp = ros::Time::now();
-	
-	ROS_INFO("distance x: %f | y: %f | z: %f", x_pose.pose.position.x, x_pose.pose.position.y, x_pose.pose.position.z);
-	
-	*/
-	
-	return true;
-}
+    /*bool OneTaskInverseKinematics::TFCallback(const tf2_msgs::TFMessage::ConstPtr &msg)
+    {
+      return true;
+    }*/
 
     void OneTaskInverseKinematics::command(const bartender_control::bartender_msg::ConstPtr &msg)
     {
 
-        x_des_.p = KDL::Vector(msg->des_frame.position.x, msg->des_frame.position.y, msg->des_frame.position.z);
-        x_des_.M = KDL::Rotation::EulerZYZ(msg->des_frame.orientation.x, msg->des_frame.orientation.y, msg->des_frame.orientation.z);
-        
-	bartender_control::OneTaskInverseKinematics::FrameToPose(x_des_,x_des_pose);
+        /*x_des_.p = KDL::Vector(msg->des_frame.position.x, msg->des_frame.position.y, msg->des_frame.position.z);
+        x_des_.M = KDL::Rotation::EulerZYZ(msg->des_frame.orientation.x, msg->des_frame.orientation.y, msg->des_frame.orientation.z);*/
+
+	// bartender_control::OneTaskInverseKinematics::FrameToPose(x_des_,x_des_pose);
+	
+	//************************** reading message from manager **************************
+	// x_des_pose.pose = msg->des_frame;
 	
         if (!msg->arrived) cmd_flag_ = 1;
         if (msg->arrived) cmd_flag_ = 0;
 	
 	goal_ref = msg->goal_tf;
 	
-	ns_param = msg->arm;
+	ns_param = msg->arm;	
+	//**********************************************************************************
 	
 	std::string arm_EE = ns_param + "/" + controller + "/EE";
-	
-	//cout << arm_EE << endl;
+
 	try
 	{
-	    /*istener.waitForTransform( goal_ref, arm_EE, ros::Time::now(), ros::Duration(1.0));
-	    listener.lookupTransform( goal_ref, arm_EE, ros::Time(0), Goal_T_Ee);*/
+	    listener.waitForTransform( goal_ref, arm_EE, ros::Time::now(), ros::Duration(1.0));
+	    listener.lookupTransform( goal_ref, arm_EE, ros::Time(0), Goal_T_Ee);   
 	    
-	    listener.waitForTransform( arm_EE, goal_ref, ros::Time::now(), ros::Duration(1.0));
-	    listener.lookupTransform( arm_EE, goal_ref, ros::Time(0), Goal_T_Ee);
+	    /*listener.waitForTransform( arm_EE, goal_ref, ros::Time::now(), ros::Duration(1.0));
+	    listener.lookupTransform( arm_EE, goal_ref, ros::Time(0), Goal_T_Ee);*/
 	}
 	catch (tf::TransformException ex)
 	{
@@ -171,8 +179,8 @@ namespace bartender_control
 	
 	try
 	{
-	    listener.waitForTransform( "world_link", arm_EE, ros::Time::now(), ros::Duration(1.0));
-	    listener.lookupTransform( "world_link", arm_EE, ros::Time(0), W_T_Ee);
+	    listener.waitForTransform( "bartender_anchor", arm_EE, ros::Time::now(), ros::Duration(1.0));
+	    listener.lookupTransform( "bartender_anchor", arm_EE, ros::Time(0), W_T_Ee);
 	}
 	catch (tf::TransformException ex)
 	{
@@ -182,8 +190,8 @@ namespace bartender_control
 	
 	try
 	{
-	    listener.waitForTransform( "world_link", goal_ref, ros::Time::now(), ros::Duration(1.0));
-	    listener.lookupTransform( "world_link", goal_ref, ros::Time(0), W_T_Goal);
+	    listener.waitForTransform( "bartender_anchor", goal_ref, ros::Time::now(), ros::Duration(1.0));
+	    listener.lookupTransform( "bartender_anchor", goal_ref, ros::Time(0), W_T_Goal);
 	}
 	catch (tf::TransformException ex)
 	{
@@ -192,11 +200,13 @@ namespace bartender_control
 	}
 	
 
-	x_pose.pose.position.x = W_T_Ee.getOrigin().getX(); 
+	/*x_pose.pose.position.x = W_T_Ee.getOrigin().getX(); 
 	x_pose.pose.position.y = W_T_Ee.getOrigin().getY(); 
 	x_pose.pose.position.z = W_T_Ee.getOrigin().getZ();
 	tf::quaternionTFToMsg(W_T_Ee.getRotation(), x_pose.pose.orientation);	
-	x_pose.header.stamp = ros::Time::now();
+	x_pose.header.stamp = ros::Time::now();*/
+	
+	
 	
 	x_des_pose.pose.position.x = W_T_Goal.getOrigin().getX();
 	x_des_pose.pose.position.y = W_T_Goal.getOrigin().getY();
@@ -206,15 +216,16 @@ namespace bartender_control
 
 	// tf::StampedTransform Goal_T_Ee;
 	
-	x_diff.pose.position.x = Goal_T_Ee.getOrigin().getX(); 
+	/*x_diff.pose.position.x = Goal_T_Ee.getOrigin().getX(); 
 	x_diff.pose.position.y = Goal_T_Ee.getOrigin().getY(); 
 	x_diff.pose.position.z = Goal_T_Ee.getOrigin().getZ();
 	tf::quaternionTFToMsg(Goal_T_Ee.getRotation(), x_diff.pose.orientation);	
-	x_diff.header.stamp = ros::Time::now();
+	x_diff.header.stamp = ros::Time::now();*/
 	
-	cout << arm_EE << endl;
-	ROS_INFO("EE distance x: %f | y: %f | z: %f", x_pose.pose.position.x, x_pose.pose.position.y, x_pose.pose.position.z);
-	ROS_INFO("BOTTLE distance x: %f | y: %f | z: %f", x_des_pose.pose.position.x, x_des_pose.pose.position.y, x_des_pose.pose.position.z);
+	//cout << arm_EE << endl;
+	
+	/*ROS_INFO("EE distance x: %f | y: %f | z: %f", x_pose.pose.position.x, x_pose.pose.position.y, x_pose.pose.position.z);	
+	ROS_INFO("BOTTLE distance x: %f | y: %f | z: %f", x_des_pose.pose.position.x, x_des_pose.pose.position.y, x_des_pose.pose.position.z);*/
 	
 	return;
     }
@@ -234,53 +245,9 @@ namespace bartender_control
         // computing forward kinematics
         fk_pos_solver_->JntToCart(joint_msr_states_.q, x_);
 	
-	//bartender_control::OneTaskInverseKinematics::FrameToPose(x_,x_pose);
+	bartender_control::OneTaskInverseKinematics::FrameToPose(x_,x_pose);
 
-        /*lin_err.data[0] = x_des_pose.pose.position.x - x_pose.pose.position.x;
-	lin_err.data[1] = x_des_pose.pose.position.y - x_pose.pose.position.y;
-	lin_err.data[2] = x_des_pose.pose.position.z - x_pose.pose.position.z;*/
-	
-	lin_err.data[0] = x_diff.pose.position.x;
-	lin_err.data[1] = x_diff.pose.position.y;
-	lin_err.data[2] = x_diff.pose.position.z;
-	
-	quat_des_.v(0) = x_des_pose.pose.orientation.x;
-        quat_des_.v(1) = x_des_pose.pose.orientation.y;
-	quat_des_.v(2) = x_des_pose.pose.orientation.z;
-	quat_des_.a = x_des_pose.pose.orientation.w;
-	
-	quat_curr_.v(0) = x_pose.pose.orientation.x;
-        quat_curr_.v(1) = x_pose.pose.orientation.y;
-	quat_curr_.v(2) = x_pose.pose.orientation.z;
-	quat_curr_.a = x_pose.pose.orientation.w;
-	
-	
-	// end-effector position error
-        skew_symmetric(quat_des_.v, skew_); // Gets skew-matrix from the quaternion of desired frame
-
-        for (int i = 0; i < skew_.rows(); i++)
-            {
-                v_temp_(i) = 0.0;                               //Initializiation of the i_element of vector v_temp
-                for (int k = 0; k < skew_.cols(); k++)      
-                    v_temp_(i) += skew_(i,k)*(quat_curr_.v(k)); //Sobstitution of the the i_element of vector v_temp with the product between skew_matrix and quaternion
-            }
-
-        // end-effector orientation error
-        rot_err = quat_curr_.a*quat_des_.v - quat_des_.a*quat_curr_.v - v_temp_;
-	
-	// linear error
-	x_error.at(0) = lin_err.data[0];
-	x_error.at(1) = lin_err.data[1];
-	x_error.at(2) = lin_err.data[2];
-	// rotating error
-	x_error.at(3) = rot_err.data[0];
-	x_error.at(4) = rot_err.data[1];
-	x_error.at(5) = rot_err.data[2];
-	
-	// DEBUG
-	/*cout << ns_param << endl;
-	ROS_INFO("linear error x: %f | y: %f | z: %f", x_error.at(0), x_error.at(1), x_error.at(2));
-        ROS_INFO("rotation error x: %f | y: %f | z: %f", x_error.at(3), x_error.at(4), x_error.at(5));*/
+	bartender_control::OneTaskInverseKinematics::Error(x_pose,x_des_pose, x_error);
 	
 	std_msgs::Float64MultiArray msg_error;
 	for(int i = 0; i < x_error.size(); i++) msg_error.data.push_back( x_error.at(i) );
@@ -350,13 +317,13 @@ namespace bartender_control
                 joint_des_states_.q(i) += period.toSec()*joint_des_states_.qdot(i);
 
             // joint limits saturation
-            for (int i =0;  i < joint_handles_.size(); i++)
+            /*for (int i =0;  i < joint_handles_.size(); i++)
             {
                 if (joint_des_states_.q(i) < joint_limits_.min(i))
                     joint_des_states_.q(i) = joint_limits_.min(i);
                 if (joint_des_states_.q(i) > joint_limits_.max(i))
                     joint_des_states_.q(i) = joint_limits_.max(i);
-            }
+            }*/
 	    
 	    geometry_msgs::PoseStamped msg_pose;
 	    msg_pose = x_pose;
@@ -371,7 +338,6 @@ namespace bartender_control
             {
                 joint_msr_states_.q(i) = 0;
             }
-
 
             fk_pos_solver_->JntToCart(joint_msr_states_.q, x_initial);
             
@@ -405,6 +371,50 @@ namespace bartender_control
         return G_local.data ;
 
     }
+    
+void OneTaskInverseKinematics::Error(geometry_msgs::PoseStamped& p_curr, geometry_msgs::PoseStamped& p_des, std::vector<double> &error)
+{
+	
+	KDL::Vector v_temp_;
+	Eigen::Matrix<double,3,3> skew_;
+	KDL::Vector rot_err;
+	
+	quaternion_ q_des;
+	quaternion_ q_curr;
+
+	q_des.v(0) = p_des.pose.orientation.x;
+        q_des.v(1) = p_des.pose.orientation.y;
+	q_des.v(2) = p_des.pose.orientation.z;
+	q_des.a = p_des.pose.orientation.w;
+	
+	q_curr.v(0) = p_curr.pose.orientation.x;
+        q_curr.v(1) = p_curr.pose.orientation.y;
+	q_curr.v(2) = p_curr.pose.orientation.z;
+	q_curr.a = p_curr.pose.orientation.w;
+
+	
+	// end-effector position error
+        skew_symmetric(q_des.v, skew_); // Gets skew-matrix from the quaternion of desired frame
+
+        for (int i = 0; i < skew_.rows(); i++)
+            {
+                v_temp_(i) = 0.0;                               //Initializiation of the i_element of vector v_temp
+                for (int k = 0; k < skew_.cols(); k++)      
+                    v_temp_(i) += skew_(i,k)*(q_curr.v(k)); //Sobstitution of the the i_element of vector v_temp with the product between skew_matrix and quaternion
+            }
+
+        // end-effector orientation error
+        rot_err = q_curr.a*q_des.v - q_des.a*q_curr.v - v_temp_;
+	
+	error.at(0) = p_des.pose.position.x - p_curr.pose.position.x;
+	error.at(1) = p_des.pose.position.y - p_curr.pose.position.y;
+	error.at(2) = p_des.pose.position.z - p_curr.pose.position.z;
+	
+	error.at(3) = rot_err(0);
+	error.at(4) = rot_err(1);
+	error.at(5) = rot_err(2);
+
+}
 
 } //  Namespace BRACKET
 

@@ -84,6 +84,7 @@ class BartenderManager {
 		KDL::Frame x_err_left;
 
 		double error_lin_left, error_lin_right;
+		double error_right[6], error_left[6];
 		
 		KDL::Frame x_err_compare;
 
