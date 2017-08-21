@@ -19,13 +19,21 @@
 #include <boost/thread/condition.hpp>
 #include <sstream>
 #include "std_msgs/Float64MultiArray.h"
+#include "std_msgs/String.h"
 
 #include <ros/node_handle.h>
 #include <ros/ros.h>
 #include <time.h>
 
+#include <dynamic_reconfigure/server.h>
+#include <bartender_manager/managerConfig.h>
+
 #include <utils/pseudo_inversion.h>
 #include <utils/skew_symmetric.h>
+
+#include <tf/transform_listener.h>
+
+#include <XmlRpc.h>
 
 namespace bartender_control
 {
@@ -34,23 +42,56 @@ namespace bartender_control
 	public:
 		OneTaskInverseKinematics();
 		~OneTaskInverseKinematics();
+		
+		struct quaternion_
+		{
+			KDL::Vector v;
+			double a;
+		} quat_curr_, quat_des_;
+		
+		ros::NodeHandle pnh;
+		std::string ns_param;
+		std::string controller;
 
 		bool init(hardware_interface::PositionJointInterface *robot, ros::NodeHandle &n);
+		void FrameToPose(KDL::Frame &frame, geometry_msgs::PoseStamped &pose);
 		void update(const ros::Time& time, const ros::Duration& period);
 		void command(const bartender_control::bartender_msg::ConstPtr &msg);
 		void param_update();
+		bool getCurrentPosition();
+		void quaternionProduct(quaternion_ q1, quaternion_ q2, quaternion_ &q);
 		Eigen::Matrix<double, 7, 1> potentialEnergy(KDL::JntArray q);
+		
+		// config file
+		dynamic_reconfigure::Server<bartender_manager::managerConfig> server;
+		dynamic_reconfigure::Server<bartender_manager::managerConfig>::CallbackType f;
+		void config_callback(bartender_manager::managerConfig &config, uint32_t level);
+		
+		inline const char * const BoolToString(bool b)
+		{
+		  return b ? "true" : "false";
+		}
 
 		ros::Subscriber sub_bartender_cmd;
-
-		ros::Publisher pub_check_error, pub_check_error_gravity;
+		
+		ros::Subscriber sub_bartender_goal;
+		
+		ros::Publisher pub_check_error;
 		ros::Publisher pub_check_initial;
+		ros::Publisher pub_pose;
 
 		KDL::Frame x_;		//current pose
+		geometry_msgs::PoseStamped x_pose;
+		
 		KDL::Frame x_initial;		//initial pose
+		geometry_msgs::PoseStamped x_initial_pose;
+		
 		KDL::Frame x_des_;	//desired pose
+		geometry_msgs::PoseStamped x_des_pose;
+		
+		geometry_msgs::PoseStamped x_diff;
 
-		KDL::Twist x_err_;	//error position
+		
 		// KDL::Frame x_err_;	//error position
 
 		KDL::JntArray q_cmd_; // computed set points
@@ -61,16 +102,22 @@ namespace bartender_control
 		Eigen::Matrix<double,3,3> skew_;	//skew-matrix (3x3) of double
 		Eigen::Matrix<double, 7, 7> P_null;	// Null-space projector
 
+		Eigen::Matrix<double, 7, 7> K_p;
+		Eigen::Matrix<double, 7, 7> K_d;
+		
+		std::vector<double> x_error;
+		KDL::Vector rot_err;
+		KDL::Vector lin_err;
+		
         Eigen::Matrix<double, 7, 1> q_null;
 
         double rot_z;
         bool do_rot_Z;
-
-		struct quaternion_
-		{
-			KDL::Vector v;
-			double a;
-		} quat_curr_, quat_des_;
+	
+	tf::StampedTransform Goal_T_Ee, W_T_Ee, W_T_Goal;
+	tf::TransformListener listener;
+	
+	std::string goal_ref;
 
 		double Roll_x_init, Pitch_x_init, Yaw_x_init;
 

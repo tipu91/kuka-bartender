@@ -36,7 +36,7 @@ int main(int argc, char **argv)
 
 		manager.DrinkSelection();
 
-		//**********************************************************************************************************************//
+	//**********************************************************************************************************************//
         //  							Sequence of actions aimed at the realization of cocktail							    //
         //**********************************************************************************************************************//
 
@@ -44,8 +44,16 @@ int main(int argc, char **argv)
 
 		while (action == 1)
 		{
+			ros::spinOnce();
+			
 			manager.Publish();
-
+			
+			manager.error_lin_left = manager.PoseDistance(manager.x_des_l,manager.x_left);
+			manager.error_lin_right = manager.PoseDistance(manager.x_des_r,manager.x_right);
+			
+			// ROS_INFO("errori lineari DX: %f | SX: %f", manager.error_lin_right, manager.error_lin_left);
+			
+			// if ( manager.compare_error(manager.error_lin_right) && !manager.msg_right.arrived )
 			if ( manager.compare_error(manager.x_err_right_v) && !manager.msg_right.arrived )
 			{	
 				ROS_INFO("DESTRO arrivato alla bottiglia!!");
@@ -53,7 +61,7 @@ int main(int argc, char **argv)
 				fin_r = !fin_r;	
 				manager.msg_right.arrived = true;
 			}
-
+			// if ( manager.compare_error(manager.error_lin_left) && !manager.msg_left.arrived )
 			if ( manager.compare_error(manager.x_err_left_v) && !manager.msg_left.arrived )
 			{	
 				ROS_INFO("SINISTRO arrivato alla bottiglia!!");
@@ -75,11 +83,12 @@ int main(int argc, char **argv)
 
 		//**********************************SECOND ACTION: To the glass**********************************************************
 
-		manager.ToGlass();
+		/*manager.ToGlass();
 
 		while (action == 2)
 		{
-
+			ros::spinOnce();
+			
 			manager.Publish();
 
 			if ( manager.compare_error(manager.x_err_right_v) && !manager.msg_right.arrived )
@@ -105,15 +114,16 @@ int main(int argc, char **argv)
 				ros::Duration(2.0).sleep();
 			}
 
-		}
+		}*/
 
 		//**********************************THIRD ACTION: Pouring****************************************************************
 
-		manager.Pouring();
+		/*manager.Pouring();
 
 		while (action == 3)
 		{
-
+			ros::spinOnce();
+			
 			manager.Publish();
 
 			if ( manager.compare_error(manager.x_err_right_v) && !manager.msg_right.arrived )
@@ -141,7 +151,7 @@ int main(int argc, char **argv)
 				manager.Publish();
 			}
 
-		}
+		}*/
 	}
 		
 	

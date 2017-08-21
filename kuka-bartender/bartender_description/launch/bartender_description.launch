@@ -1,11 +1,17 @@
+<?xml version="1.0"?>
+
 <launch>
     <!-- LAUNCH INTERFACE -->
     <arg name="gui" default="false" />
     <arg name="robot_name" default="bartender"/>
-    <arg name="use_rviz" default="false"/>
+    <arg name="use_rviz" default="true"/>
     <arg name="use_joint_state_publisher" default="true"/>
     <arg name="use_calibration_package" default="false"/>
-    <arg name="use_grasp_estimator" default="false"/>		
+    <arg name="use_grasp_estimator" default="false"/>	
+    
+    <arg name="right_arm" default="right_arm"/>
+    <arg name="left_arm" default="left_arm"/>
+    <arg name="control" default="bartender_control"/>
 
     <!-- configure whether the real hardware is enabled or not -->
     <arg name="head_enabled" default="false"/>
@@ -68,7 +74,7 @@
             <arg name="paused" value="false"/>
             <!-- when using the real/sim scenario in parallel, set "use_enabled_time" to false -->
             <arg name="use_sim_time" value="true"/>
-            <arg name="gui" value="true"/>
+            <arg name="gui" value="false"/>
             <arg name="headless" value="true"/>
             <arg name="debug" value="false"/>
         </include>
@@ -94,9 +100,13 @@
             </include>
             <!-- perhaps it is worth remapping joint states -->
         </group>
+        
+        <param name="ns_arm" value="left_arm"/>
+        <param name="class" value="bartender_control"/>
 
         <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen"  args="joint_state_controller bartender_control"/>
-    </group>
+	<node name="left_transf" pkg="tf" type="static_transform_publisher" args="0 0 0.15 0 0 0 /$(arg left_arm)_7_link /$(arg left_arm)/$(arg control)/EE 100"/>
+   </group>
 
 <!-- LEFT HAND -->
 
@@ -124,6 +134,7 @@
     
     
     <group ns="right_arm">
+      
         <group if="$(arg right_arm_enabled)">
             <!--add a copy of the robot description within the name space -->
             <param name="robot_description" command="$(find xacro)/xacro --inorder $(find bartender_description)/robot/$(arg robot_name).urdf.xacro use_mimic_tag:=true"/>
@@ -136,8 +147,12 @@
                 <arg name="name" value="right_arm"/>
             </include>
         </group>
+	
+	<param name="ns_arm" value="right_arm"/>
+        <param name="class" value="bartender_control"/>
 
         <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen"  args="joint_state_controller bartender_control"/>
+	<node name="right_transf" pkg="tf" type="static_transform_publisher" args="0 0 0.15 0 0 0 /$(arg right_arm)_7_link /$(arg right_arm)/$(arg control)/EE 100"/>
     </group>
 
 <!-- RIGHT HAND -->
@@ -162,6 +177,14 @@
         </group>
     </group>
 
+    <!-- TF for grasping -->
+    
+<node name="vodka_rotation_tf" pkg="tf" type="static_transform_publisher" args="0 0 0 1.57 -3.14 -1.57 vodka_link vodka 100"/>
+<node name="rum_rotation_tf" pkg="tf" type="static_transform_publisher" args="0 0 0 1.57 -3.14 -1.57 rum_link rum 100"/>
+<node name="lemon_rotation_tf" pkg="tf" type="static_transform_publisher" args="0 0 0 1.57 -3.14 -1.57 lemon_link lemon 100"/>
+<node name="coca_rotation_tf" pkg="tf" type="static_transform_publisher" args="0 0 0 1.57 -3.14 -1.57 coca_link coca 100"/>
+<node name="glass_rotation_tf" pkg="tf" type="static_transform_publisher" args="0 0 0 1.57 -3.14 -1.57 glass_link glass 100"/>
+<node name="world_rotation_tf" pkg="tf" type="static_transform_publisher" args="0 0 0 -1.57 0 1.57 world world_link 100"/>
 
 </launch>
 

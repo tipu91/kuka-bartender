@@ -6,6 +6,7 @@ find_package(catkin REQUIRED COMPONENTS
 	std_msgs 
 	message_generation 
 	lwr_controllers
+	dynamic_reconfigure
   controller_interface
 )
 
@@ -29,10 +30,11 @@ generate_messages(
 catkin_package(
   CATKIN_DEPENDS
 	roscpp 
-  controller_interface
+	controller_interface
 	std_msgs 
 	message_generation  
 	lwr_controllers
+	dynamic_reconfigure
   INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}
 )

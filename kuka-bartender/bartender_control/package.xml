@@ -23,6 +23,7 @@
   <exec_depend>std_msgs</exec_depend>
    -->
   <depend>message_generation</depend>
+  <depend>dynamic_reconfigure</depend>
   <!-- The export tag contains other, unspecified, tags -->
   <export>
     <controller_interface plugin="${prefix}/bartender_control_plugins.xml"/>
