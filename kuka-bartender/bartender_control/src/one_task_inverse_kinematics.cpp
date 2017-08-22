@@ -14,7 +14,7 @@ using namespace std;
 namespace bartender_control 
 {
     OneTaskInverseKinematics::OneTaskInverseKinematics():pnh("~") {
-	  pnh.param<std::string>("ns_arm", ns_param, "none_ns");
+	  pnh.param<std::string>("ns_arm", ns_param, "unknown");
 	  pnh.param<std::string>("class", controller,"bartender_control");
 	  
 	  /*f = boost::bind(&OneTaskInverseKinematics::config_callback, this, _1, _2);   
@@ -70,6 +70,7 @@ namespace bartender_control
 	pub_pose = nh_.advertise<geometry_msgs::PoseStamped>("position", 250);
 
         sub_bartender_cmd = nh_.subscribe("command", 250, &OneTaskInverseKinematics::command, this);
+	sub_bartender_config = nh_.subscribe("config",250, &OneTaskInverseKinematics::configCallback, this);
 	//sub_bartender_tf = nh_.subscribe("/tf", 250, &OneTaskInverseKinematics::TFCallback, this);
 
 	x_error.resize(6);
@@ -103,19 +104,21 @@ namespace bartender_control
 	    yaw = std::atan2(t3, t4);
     }
     
-  /*void OneTaskInverseKinematics::config_callback(bartender_control::controlConfig& config, uint32_t level)
+  void OneTaskInverseKinematics::configCallback(const bartender_control::cfg_msg::ConstPtr &msg)
   {
       // controller proportional constants
       ROS_INFO("Reconfigure Request");
       
-      second_task = config.second_task;
-      alpha1 = config.alpha_1;
-      alpha2 = config.alpha_2;
+      second_task = msg->second_task;
+      alpha1 = msg->alpha1;
+      alpha2 = msg->alpha2;
     
       ROS_INFO("ALPHA 1 = %f", alpha1);
       ROS_INFO("ALPHA 2 = %f", alpha2);
       ROS_INFO("Second task = %s", bartender_control::OneTaskInverseKinematics::BoolToString(second_task));
-  }*/
+      
+      return;
+  }
 
     void OneTaskInverseKinematics::FrameToPose(KDL::Frame &frame, geometry_msgs::PoseStamped &pose)
     {

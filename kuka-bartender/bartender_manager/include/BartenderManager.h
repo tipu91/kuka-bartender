@@ -19,6 +19,7 @@
 #include <boost/scoped_ptr.hpp>
 #include <vector>
 #include <bartender_control/bartender_msg.h> 
+#include <bartender_control/cfg_msg.h>
 #include <Eigen/LU>
 #include <dynamic_reconfigure/server.h>
 #include <bartender_manager/managerConfig.h>
@@ -74,6 +75,8 @@ class BartenderManager {
 		bartender_control::bartender_msg msg_right;
 		bartender_control::bartender_msg msg_left;
 		
+		bartender_control::cfg_msg msg_config;
+		
 		geometry_msgs::Pose grasp_des_right;
 		geometry_msgs::Pose grasp_des_left;
 		
@@ -113,10 +116,13 @@ class BartenderManager {
 
 		std::vector<double> vodka_;
 
-	private:
+	// private:
 
 		ros::Publisher pub_bartender_cmd_right;
 		ros::Publisher pub_bartender_cmd_left;
+		
+		ros::Publisher pub_bartender_config_right;
+		ros::Publisher pub_bartender_config_left;
 		
 		ros::Publisher joint_pub_l;
 		ros::Publisher joint_pub_r;

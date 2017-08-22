@@ -1,3 +1,4 @@
+<!--<?xml version="1.0"?>-->
 <package format="2">
   <name>bartender_control</name>
   <version>0.0.0</version>
@@ -13,11 +14,29 @@
   <depend>lwr_hw</depend>
   <depend>lwr_description</depend>
   <depend>lwr_controllers</depend>
+  
   <depend>roscpp</depend>
   <depend>std_msgs</depend>
   <depend>controller_interface</depend> 
   <depend>message_generation</depend>
   <depend>dynamic_reconfigure</depend>
+  <depend>message_runtime</depend>
+  
+  
+  <!--<build_depend>message_generation</build_depend>
+  <run_depend>message_runtime</run_depend>-->
+  
+  <!--<build_depend>roscpp</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>controller_interface</build_depend>
+  <build_depend>message_generation</build_depend>
+  <build_depend>dynamic_reconfigure</build_depend>
+  
+  <run_depend>roscpp</run_depend>
+  <run_depend>std_msgs</run_depend>
+  <run_depend>controller_interface</run_depend>
+  <run_depend>message_runtime</run_depend>
+  <run_depend>dynamic_reconfigure</run_depend>-->
   
   <!-- The export tag contains other, unspecified, tags -->
   <export>

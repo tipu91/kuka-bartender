@@ -11,6 +11,9 @@ BartenderManager::BartenderManager()
     pub_bartender_cmd_right = n_.advertise<bartender_control::bartender_msg>("/right_arm/bartender_control/command", 250);
     pub_bartender_cmd_left = n_.advertise<bartender_control::bartender_msg>("/left_arm/bartender_control/command", 250);
     
+    pub_bartender_config_right = n_.advertise<bartender_control::cfg_msg>("/right_arm/bartender_control/config", 250);
+    pub_bartender_config_left = n_.advertise<bartender_control::cfg_msg>("/left_arm/bartender_control/config", 250);
+    
     joint_pub_l = n_.advertise<sensor_msgs::JointState>("/left_hand/joint_states", 1);
     joint_pub_r = n_.advertise<sensor_msgs::JointState>("/right_hand/joint_states", 1);
 
@@ -36,8 +39,11 @@ void BartenderManager::config_callback(bartender_manager::managerConfig& config,
 {
     // controller proportional constants
     ROS_INFO("Reconfigure Request");
-
-   
+    
+    msg_config.alpha1 = config.alpha_1;
+    msg_config.alpha2 = config.alpha_2;
+    msg_config.second_task = config.second_task;
+    
 }
 
 void BartenderManager::checkCallbackPoseright(const geometry_msgs::PoseStamped::ConstPtr & msg_pose) {

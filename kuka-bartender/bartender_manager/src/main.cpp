@@ -28,6 +28,10 @@ int main(int argc, char **argv)
 	usleep(1000000);
 	
 	manager.Init();
+	
+	    
+	manager.pub_bartender_config_right.publish(manager.msg_config);
+	manager.pub_bartender_config_left.publish(manager.msg_config);
 
 	bool finished = false;
 	bool fin_l = false;
@@ -50,6 +54,9 @@ int main(int argc, char **argv)
 		{
 			ros::spinOnce();
 			
+			manager.pub_bartender_config_right.publish(manager.msg_config);
+			manager.pub_bartender_config_left.publish(manager.msg_config);
+	
 			manager.Publish();
 			
 			manager.error_lin_left = manager.PoseDistance(manager.x_des_l,manager.x_left);

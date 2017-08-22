@@ -19,6 +19,7 @@ link_directories(${catkin_LIBRARY_DIRS})
 add_message_files(
   FILES
   bartender_msg.msg
+  cfg_msg.msg
 )
 
 ## Generate dynamic reconfigure parameters in the 'cfg' folder
@@ -30,6 +31,7 @@ generate_messages(
   DEPENDENCIES
   std_msgs
   geometry_msgs
+  
 )
 
 catkin_package(
@@ -40,6 +42,7 @@ catkin_package(
 	message_generation  
 	lwr_controllers
 	dynamic_reconfigure
+	message_runtime
   INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}
 )
