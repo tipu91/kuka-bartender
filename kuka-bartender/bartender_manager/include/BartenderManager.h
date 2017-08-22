@@ -71,6 +71,7 @@ class BartenderManager {
 		bool BottleGrasping = false;
 		bool ActionPouring = false;
 		bool Init_cond = false;
+		bool run_manager;
 
 		bartender_control::bartender_msg msg_right;
 		bartender_control::bartender_msg msg_left;
@@ -108,7 +109,8 @@ class BartenderManager {
 		tf::StampedTransform world_T_lemon;
 		tf::StampedTransform world_T_coca;
 		tf::StampedTransform world_T_glass;
-		tf::StampedTransform fake;
+
+		tf::StampedTransform world_T_puring;
 		
 		tf::TransformListener listener;
 
@@ -146,6 +148,8 @@ class BartenderManager {
 		geometry_msgs::Pose lemon;
 		geometry_msgs::Pose coca;
 		geometry_msgs::Pose glass;
+		geometry_msgs::Pose puring;
+		
 
 		geometry_msgs::Pose pose_rot_;
 

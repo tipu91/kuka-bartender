@@ -17,6 +17,15 @@ namespace bartender_control
 	  pnh.param<std::string>("ns_arm", ns_param, "unknown");
 	  pnh.param<std::string>("class", controller,"bartender_control");
 	  
+	  //Definition of publishers and subscribes
+
+	  pub_check_error = nh_.advertise<std_msgs::Float64MultiArray>("error", 250);
+	  pub_check_initial = nh_.advertise<geometry_msgs::Pose>("initial_position", 250);
+	  pub_pose = nh_.advertise<geometry_msgs::PoseStamped>("position", 250);
+
+	  sub_bartender_cmd = nh_.subscribe("command", 250, &OneTaskInverseKinematics::command, this);
+	  sub_bartender_config = nh_.subscribe("config",250, &OneTaskInverseKinematics::configCallback, this);
+	  
 	  /*f = boost::bind(&OneTaskInverseKinematics::config_callback, this, _1, _2);   
 	  server.setCallback(f);*/
 	  
@@ -56,29 +65,14 @@ namespace bartender_control
 
         // computing forward kinematics
         fk_pos_solver_->JntToCart(joint_msr_states_.q, x_);
-        // initialization x_des_
-        x_des_.p = KDL::Vector(-1, 0, 1);
-        x_des_.M = KDL::Rotation::Quaternion(0, 0 , 0, -1);
-
-
-        cmd_flag_ = 0;
-
-        //Definition of publishers and subscribes
-
-        pub_check_error = nh_.advertise<std_msgs::Float64MultiArray>("error", 250);
-        pub_check_initial = nh_.advertise<geometry_msgs::Pose>("initial_position", 250);
-	pub_pose = nh_.advertise<geometry_msgs::PoseStamped>("position", 250);
-
-        sub_bartender_cmd = nh_.subscribe("command", 250, &OneTaskInverseKinematics::command, this);
-	sub_bartender_config = nh_.subscribe("config",250, &OneTaskInverseKinematics::configCallback, this);
-	//sub_bartender_tf = nh_.subscribe("/tf", 250, &OneTaskInverseKinematics::TFCallback, this);
 
 	x_error.resize(6);
 	
-	//***************************************************************//
+	//**************************Default values**************************//
 	alpha1 = 8;
 	alpha2 = 0.4;
 	second_task = true;
+	cmd_flag_ = 0;
 	
         return true;
     }
@@ -147,14 +141,9 @@ namespace bartender_control
 
     void OneTaskInverseKinematics::command(const bartender_control::bartender_msg::ConstPtr &msg)
     {
-
-        /*x_des_.p = KDL::Vector(msg->des_frame.position.x, msg->des_frame.position.y, msg->des_frame.position.z);
-        x_des_.M = KDL::Rotation::EulerZYZ(msg->des_frame.orientation.x, msg->des_frame.orientation.y, msg->des_frame.orientation.z);*/
-
-	// bartender_control::OneTaskInverseKinematics::FrameToPose(x_des_,x_des_pose);
 	
 	//************************** reading message from manager **************************
-	// x_des_pose.pose = msg->des_frame;
+	x_des_pose.pose = msg->des_frame;
 	
         if (!msg->arrived) cmd_flag_ = 1;
         if (msg->arrived) cmd_flag_ = 0;
@@ -211,11 +200,11 @@ namespace bartender_control
 	
 	
 	
-	x_des_pose.pose.position.x = W_T_Goal.getOrigin().getX();
+	/*x_des_pose.pose.position.x = W_T_Goal.getOrigin().getX();
 	x_des_pose.pose.position.y = W_T_Goal.getOrigin().getY();
 	x_des_pose.pose.position.z = W_T_Goal.getOrigin().getZ();
 	tf::quaternionTFToMsg(W_T_Goal.getRotation(), x_des_pose.pose.orientation);	
-	x_des_pose.header.stamp = ros::Time::now();
+	x_des_pose.header.stamp = ros::Time::now();*/
 
 	// tf::StampedTransform Goal_T_Ee;
 	
@@ -320,13 +309,13 @@ namespace bartender_control
                 joint_des_states_.q(i) += period.toSec()*joint_des_states_.qdot(i);
 
             // joint limits saturation
-            /*for (int i =0;  i < joint_handles_.size(); i++)
+            for (int i =0;  i < joint_handles_.size(); i++)
             {
                 if (joint_des_states_.q(i) < joint_limits_.min(i))
                     joint_des_states_.q(i) = joint_limits_.min(i);
                 if (joint_des_states_.q(i) > joint_limits_.max(i))
                     joint_des_states_.q(i) = joint_limits_.max(i);
-            }*/
+            }
 	    
 	    geometry_msgs::PoseStamped msg_pose;
 	    msg_pose = x_pose;
@@ -343,8 +332,6 @@ namespace bartender_control
             }
 
             fk_pos_solver_->JntToCart(joint_msr_states_.q, x_initial);
-            
-	    //x_initial.M.GetEulerZYZ(Roll_x_init, Pitch_x_init, Yaw_x_init);
 	    
 	    bartender_control::OneTaskInverseKinematics::FrameToPose(x_initial,x_initial_pose);
             

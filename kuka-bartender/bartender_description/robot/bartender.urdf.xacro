@@ -40,22 +40,22 @@
   
   <!-- BOTTLES -->  
   <xacro:model_bottle name="vodka" parent="bartender_anchor">
-    <origin xyz="-1.0 0.15 0.22" rpy="0 0 0"/>
+    <origin xyz="-1 0.15 0.22" rpy="0 0 0"/>
     <material name="Vito/LightGrey"/>
   </xacro:model_bottle>
   
   <xacro:model_bottle name="lemon" parent="bartender_anchor">
-    <origin xyz="-1.0 -0.15 0.22" rpy="0 0 0"/>
+    <origin xyz="-1 -0.15 0.22" rpy="0 0 0"/>
     <material name="Vito/Orange"/>
   </xacro:model_bottle>
 
   <xacro:model_bottle name="rum" parent="bartender_anchor">      
-    <origin xyz="-1.0 0.3 0.22" rpy="0 0 0"/>
+    <origin xyz="-1 0.3 0.22" rpy="0 0 0"/>
     <material name="Vito/Green"/>
   </xacro:model_bottle>
 
   <xacro:model_bottle name="coca" parent="bartender_anchor">      
-    <origin xyz="-1.0 -0.3 0.22" rpy="0 0 0"/>
+    <origin xyz="-1 -0.3 0.22" rpy="0 0 0"/>
     <material name="Vito/Yellow"/>
   </xacro:model_bottle>
   

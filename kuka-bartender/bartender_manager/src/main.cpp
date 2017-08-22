@@ -37,7 +37,7 @@ int main(int argc, char **argv)
 	bool fin_l = false;
 	bool fin_r = false;
 	
-	while (ros::ok())
+	while (manager.run_manager)
 	{
 		
 		int action = 1;
@@ -84,7 +84,7 @@ int main(int argc, char **argv)
 			if ( fin_r && fin_l )
 			{
 				ROS_INFO("FINITO (al bicchiere)!!");
-				action = 2;
+				action = 3;
 				fin_l = false;
 				fin_r = false;
 				ros::Duration(2.0).sleep();
@@ -94,9 +94,9 @@ int main(int argc, char **argv)
 
 		//**********************************SECOND ACTION: To the glass**********************************************************
 
-		/*manager.ToGlass();
+		//manager.ToGlass();
 
-		while (action == 2)
+		/*while (action == 2)
 		{
 			ros::spinOnce();
 			
@@ -129,7 +129,7 @@ int main(int argc, char **argv)
 
 		//**********************************THIRD ACTION: Pouring****************************************************************
 
-		/*manager.Pouring();
+		manager.Pouring();
 
 		while (action == 3)
 		{
@@ -137,14 +137,14 @@ int main(int argc, char **argv)
 			
 			manager.Publish();
 
-			if ( manager.compare_error(manager.x_err_right_v) && !manager.msg_right.arrived )
+			if ( manager.compare_error(manager.error_right) && !manager.msg_right.arrived )
 			{	
 				ROS_INFO("DESTRO versato!!");
 				fin_r = !fin_r;	
 				manager.msg_right.arrived = true;
 			}
 
-			if ( manager.compare_error(manager.x_err_left_v) && !manager.msg_left.arrived )
+			if ( manager.compare_error(manager.error_right) && !manager.msg_left.arrived )
 			{	
 				ROS_INFO("SINISTRO versato!!");
 				fin_l = !fin_l;
@@ -162,7 +162,7 @@ int main(int argc, char **argv)
 				manager.Publish();
 			}
 
-		}*/
+		}
 	}
 		
 	
