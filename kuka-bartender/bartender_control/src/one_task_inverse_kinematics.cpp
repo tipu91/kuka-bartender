@@ -221,7 +221,7 @@ namespace bartender_control
 	bartender_control::OneTaskInverseKinematics::Error(x_pose,x_des_pose, x_error);	
 	
 	std_msgs::Float64MultiArray msg_error;
-	for(int i = 0; i < x_error.size(); i++) msg_error.data.at(i) = x_error.at(i);
+	for(int i = 0; i < x_error.size(); i++) msg_error.data.push_back( x_error.at(i) );
 	pub_check_error.publish(msg_error);
 	
     }
