@@ -48,20 +48,11 @@ class BartenderManager {
 	    void checkCallbackPoseleft(const geometry_msgs::PoseStamped::ConstPtr &msg_pose);
 		
 		double *EulerToQuaternion(float R, float P, float Y);
-		void DrinkSelection();
-		void Publish();
 		void Init();
 		void Grasping(std::vector<int> closure_value, std::string s);
 		void OpeningHand(std::vector<int> opening_value, std::string s);
-		void ToGlass();
-		void Pouring();
-		void Stop_Pouring();
-		void Dub();
-		void InitialPosition();
-		float Mod_Error(KDL::Frame err);
-		// bool compare_error(double err);
+		void ToPose(bartender_control::bartender_msg msg, std::string arm, std::string target, ros::Publisher pub, bool stop);
 		bool compare_error(double err[6]);
-		double PoseDistance(geometry_msgs::Pose pose1, geometry_msgs::Pose pose2);
 		
 		// config file
 		dynamic_reconfigure::Server<bartender_manager::managerConfig> server;
@@ -99,11 +90,8 @@ class BartenderManager {
 		ros::NodeHandle n_;
 
 		double threshold = 0.02;
-		double threshold_rot = 0.1;
+		double threshold_rot = 0.05;
 
-		double x_err_right_v[6];
-		double x_err_left_v[6];
-		
 		tf::StampedTransform world_T_vodka;
 		tf::StampedTransform world_T_rum;
 		tf::StampedTransform world_T_lemon;

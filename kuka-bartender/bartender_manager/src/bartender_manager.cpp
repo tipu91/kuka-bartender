@@ -25,12 +25,11 @@ BartenderManager::BartenderManager()
     
     sub_bartender_init_right = n_.subscribe("/right_arm/bartender_control/initial_position", 250, &BartenderManager::checkCallback_right_initial, this);
     sub_bartender_init_left = n_.subscribe("/left_arm/bartender_control/initial_position", 250, &BartenderManager::checkCallback_left_initial, this);
-   
-   	for(int i=0; i<6; i++) x_err_right_v[i] = 1;
-   	for(int i=0; i<6; i++) x_err_left_v[i] = 1;
 
-   	n_.param<int>("printscreen", print, 0);
+    n_.param<int>("printscreen", print, 0);
     
+    for(int i=0; i<6; i++) error_right[i] = 1;
+    for(int i=0; i<6; i++) error_left[i] = 1;
 }
 
 BartenderManager::~BartenderManager() {}
@@ -62,32 +61,14 @@ void BartenderManager::checkCallbackPoseleft(const geometry_msgs::PoseStamped::C
 //Function callback for right arm
 void BartenderManager::checkCallback_right(const std_msgs::Float64MultiArray & msg_err) {
     
-    for(int i=0; i<6; i++) x_err_right_v[i] = msg_err.data[i];
-
-    error_right[0] = msg_err.data[0];
-    error_right[1] = msg_err.data[1];
-    error_right[2] = msg_err.data[2];
-    error_right[3] = msg_err.data[3];
-    error_right[4] = msg_err.data[4];
-    error_right[5] = msg_err.data[5];
-
-    // x_err_right.M = KDL::Rotation::EulerZYX(msg_err.data[3], msg_err.data[4], msg_err.data[5]);
+    for(int i=0; i<6; i++) error_right[i] = msg_err.data[i];
 
 }
 
 //Function callback for left arm
 void BartenderManager::checkCallback_left(const std_msgs::Float64MultiArray & msg_err) {
     
-    for(int i=0; i<6; i++) x_err_left_v[i] = msg_err.data[i];
-
-    error_left[0] = msg_err.data[0];
-    error_left[1] = msg_err.data[1];
-    error_left[2] = msg_err.data[2];
-    error_left[3] = msg_err.data[3];
-    error_left[4] = msg_err.data[4];
-    error_left[5] = msg_err.data[5];
-
-    // x_err_left.M = KDL::Rotation::EulerZYX(msg_err.data[3], msg_err.data[4], msg_err.data[5]);
+    for(int i=0; i<6; i++) error_left[i] = msg_err.data[i];
 
 }
 
@@ -108,16 +89,6 @@ void BartenderManager::checkCallback_left_initial(const geometry_msgs::Pose::Con
 //This function initializes the bottle map (string,frame)
 void BartenderManager::Init ()
 {
-	//***********************This piece of code is for wait the real transforms*******************************
-	/*try{
-	  listener.waitForTransform( "world_link", "world",ros::Time::now(), ros::Duration(3));
-	  listener.lookupTransform( "world_link", "world", ros::Time(0), fake);
-	}
-	catch (tf::TransformException ex){
-	  ROS_ERROR("%s",ex.what());
-	  ros::Duration(1.0).sleep();
-	}*/
-	//*********************************************************************************************************
 	
 	try{
 	  listener.waitForTransform( "bartender_anchor", "vodka",ros::Time::now(), ros::Duration(3));
@@ -229,63 +200,16 @@ double *BartenderManager::EulerToQuaternion(float R, float P, float Y)
 
 }
 
-//Function who let the user insert 2 bottle and it creates 2 msg
-void BartenderManager::DrinkSelection ()
-{	
-	string choise1, choise2;
-
-  	cout << "Please, enter the first bottle (rum, vodka, lemon, coca): " << endl;
-  	getline (cin, choise1);
-
-  	cout << "Please, enter the second bottle (rum, vodka, lemon, coca): " << endl;
-  	getline (cin, choise2);
-
-  	bool count_r = false;
-  	bool count_l = false;
-
-  	for (auto bot : bottle){
-  		if(!choise1.compare(bot.first)){
-		  
-		    msg_right.arm = "right_arm";		  
-		    msg_right.goal_tf = bot.first;		    
-		    msg_right.des_frame = bot.second;
-		    
-		    x_des_r = bot.second;
-
-		    bottle_right = bot.second;
-
-		    count_r = true;
-		}
-		
-  	}
-
-  	for (auto bot : bottle){
-  		if(!choise2.compare(bot.first)){
-
-		    msg_left.goal_tf = bot.first;
-		    msg_left.arm = "left_arm";	    
-		    msg_left.des_frame = bot.second;
-		    
-		    x_des_l = bot.second;
-
-		    msg_left.arrived = false;
-
-		    bottle_left = bot.second;
-
-		    count_l = true;
-  		}
-  		
-  	}
-
-  	if (!count_r || !count_l) 
-  	{
-  		ROS_INFO("You wrote bad!!");
-  		BartenderManager::DrinkSelection();
-  	}
-
-  	cout << "You have chosen " << choise1 << " and " << choise2 << endl;
-
-	BartenderManager::Publish();
+void BartenderManager::ToPose(bartender_control::bartender_msg msg, std::string arm, std::string target, ros::Publisher pub, bool run)
+{
+	msg.arm = arm;		  
+	msg.goal_tf = target;		    
+	msg.des_frame = bottle[target];
+	msg.run = run;
+    
+	pub.publish(msg);
+	
+	//ROS_INFO("DES_POSE x=%f | y=%f | z=%f", msg.des_frame.position.x, msg.des_frame.position.y, msg.des_frame.position.z);
 
 }
 
@@ -343,121 +267,6 @@ void BartenderManager::OpeningHand(std::vector<int> opening_value, std::string s
 
 }
 
-void BartenderManager::ToGlass()
-{
-
-	string glassDx = "glass";
-	string glassSx = "glass";
-
-	for (auto bot : bottle){
-  		if(!glassDx.compare(bot.first)){
-		    
-		    msg_right.des_frame = bot.second;
-
-		    msg_right.arrived = false;
-
-		 }
-  	}
-
-  	for (auto bot : bottle){
-  		if(!glassSx.compare(bot.first)){
-		    
-		    msg_right.des_frame = bot.second;
-
-		    msg_left.arrived = false;
-
-  		}
-  	}
-  	
-  	BartenderManager::Publish();
-	
-}
-
-void BartenderManager::Pouring()
-{
-  
-	try{
-	  
-	  listener.waitForTransform( "bartender_anchor", "glass_puring", ros::Time::now(), ros::Duration(3));
-	  listener.lookupTransform( "bartender_anchor", "glass_puring", ros::Time(0), world_T_puring);
-	  
-	  puring.position.x = world_T_puring.getOrigin().getX(); 
-	  puring.position.y = world_T_puring.getOrigin().getY(); 
-	  puring.position.z = world_T_puring.getOrigin().getZ();
-	  tf::quaternionTFToMsg(world_T_puring.getRotation(), puring.orientation);
-	}
-	catch (tf::TransformException ex){
-	  ROS_ERROR("%s",ex.what());
-	  ros::Duration(1.0).sleep();
-	}
-	
-	msg_right.arrived = false;
-	msg_right.des_frame = puring;
-
-	msg_left.arrived = false;
-	msg_left.des_frame = puring;
-
-}
-
-void BartenderManager::Stop_Pouring()
-{
-
-	msg_right.des_frame = bottle_right;
-	msg_right.arrived = false;
-
-
-	msg_left.des_frame = bottle_left;	
-	msg_left.arrived = false;
-
-
-}
-
-void BartenderManager::InitialPosition()
-{
-
-	msg_right.arrived = false;
-	msg_left.arrived = false;
-
-	msg_right.des_frame = x_right_initial;
-	msg_left.des_frame = x_left_initial;
-
-}
-
-// :-)
-void BartenderManager::Dub()
-{
-	msg_right.des_frame.position.x = -0.3;
-	msg_right.des_frame.position.y = 3;
-	msg_right.des_frame.position.z = 1;
-
-	msg_right.arrived = false;
-
-
-  	msg_left.des_frame.position.x = -0.5;
-	msg_left.des_frame.position.y = 0.4;
-	msg_left.des_frame.position.z = 0.4;
-
-	msg_left.arrived = false;
-
-}
-
-//Function who publishes 2 msg
-void BartenderManager::Publish() 
-{
-	pub_bartender_cmd_right.publish(msg_right);
-	pub_bartender_cmd_left.publish(msg_left);
-}
-
-float BartenderManager::Mod_Error(KDL::Frame err)
-{
-	static float d;
-
-	float d2 = ( err.p(0)*err.p(0) ) + ( err.p(1)*err.p(1) ) + ( err.p(2)*err.p(2) );
-	d = sqrt(d2);
-
-	return d;
-}
-
 bool BartenderManager::compare_error(double err[6])
 {
 	static bool near_p;
@@ -467,27 +276,4 @@ bool BartenderManager::compare_error(double err[6])
 
 	return near_p;
 
-}
-
-/*bool BartenderManager::compare_error(double err)
-{
-	static bool near_p;
-
-	if (err < threshold) near_p = true;
-	else near_p = false;
-
-	return near_p;
-
-}*/
-
-double BartenderManager::PoseDistance(geometry_msgs::Pose pose1, geometry_msgs::Pose pose2)
-{
-
-    double Ex = pose2.position.x - pose1.position.x;  
-    double Ey = pose2.position.y - pose1.position.y;
-    double Ez = pose2.position.z - pose1.position.z;
-    
-    double Etx = sqrt( Ex*Ex + Ey*Ey + Ez*Ez );
-    
-    return Etx;
 }

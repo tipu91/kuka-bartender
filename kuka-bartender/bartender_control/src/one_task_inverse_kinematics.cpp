@@ -19,12 +19,13 @@ namespace bartender_control
 	  
 	  //Definition of publishers and subscribes
 
-	  pub_check_error = nh_.advertise<std_msgs::Float64MultiArray>("error", 250);
+	  /*pub_check_error = nh_.advertise<std_msgs::Float64MultiArray>("error", 250);
 	  pub_check_initial = nh_.advertise<geometry_msgs::Pose>("initial_position", 250);
 	  pub_pose = nh_.advertise<geometry_msgs::PoseStamped>("position", 250);
 
 	  sub_bartender_cmd = nh_.subscribe("command", 250, &OneTaskInverseKinematics::command, this);
-	  sub_bartender_config = nh_.subscribe("config",250, &OneTaskInverseKinematics::configCallback, this);
+	  
+	  sub_bartender_config = nh_.subscribe("config",250, &OneTaskInverseKinematics::configCallback, this);*/
 	  
 	  /*f = boost::bind(&OneTaskInverseKinematics::config_callback, this, _1, _2);   
 	  server.setCallback(f);*/
@@ -68,34 +69,23 @@ namespace bartender_control
 
 	x_error.resize(6);
 	
+	pub_check_error = nh_.advertise<std_msgs::Float64MultiArray>("error", 250);
+	pub_check_initial = nh_.advertise<geometry_msgs::Pose>("initial_position", 250);
+	pub_pose = nh_.advertise<geometry_msgs::PoseStamped>("position", 250);
+	
+	sub_bartender_cmd = nh_.subscribe("command", 250, &OneTaskInverseKinematics::command, this);  
+	sub_bartender_config = nh_.subscribe("config",250, &OneTaskInverseKinematics::configCallback, this);
+	
 	//**************************Default values**************************//
+	
+	for(int i=0; i<6; i++) x_error[i] = 1;
+	
 	alpha1 = 8;
 	alpha2 = 0.4;
 	second_task = true;
 	cmd_flag_ = 0;
 	
         return true;
-    }
-    
-    static void toEulerianAngle(geometry_msgs::PoseStamped& q, double& roll, double& pitch, double& yaw)
-    {
-	    double ysqr = q.pose.orientation.y * q.pose.orientation.y;
-
-	    // roll (x-axis rotation)
-	    double t0 = +2.0 * (q.pose.orientation.w * q.pose.orientation.x + q.pose.orientation.y * q.pose.orientation.z);
-	    double t1 = +1.0 - 2.0 * (q.pose.orientation.x * q.pose.orientation.x + ysqr);
-	    roll = std::atan2(t0, t1);
-
-	    // pitch (y-axis rotation)
-	    double t2 = +2.0 * (q.pose.orientation.w * q.pose.orientation.y - q.pose.orientation.z * q.pose.orientation.x);
-	    t2 = ((t2 > 1.0) ? 1.0 : t2);
-	    t2 = ((t2 < -1.0) ? -1.0 : t2);
-	    pitch = std::asin(t2);
-
-	    // yaw (z-axis rotation)
-	    double t3 = +2.0 * (q.pose.orientation.w * q.pose.orientation.z + q.pose.orientation.x * q.pose.orientation.y);
-	    double t4 = +1.0 - 2.0 * (ysqr + q.pose.orientation.z * q.pose.orientation.z);  
-	    yaw = std::atan2(t3, t4);
     }
     
   void OneTaskInverseKinematics::configCallback(const bartender_control::cfg_msg::ConstPtr &msg)
@@ -124,44 +114,29 @@ namespace bartender_control
       frame.M.GetQuaternion(pose.pose.orientation.x, pose.pose.orientation.y, pose.pose.orientation.z, pose.pose.orientation.w);
       
     }
-    void OneTaskInverseKinematics::quaternionProduct(bartender_control::OneTaskInverseKinematics::quaternion_ q1, bartender_control::OneTaskInverseKinematics::quaternion_ q2, bartender_control::OneTaskInverseKinematics::quaternion_ &q)
-    {      
-      q.a = (q1.a * q2.a) - (q1.v(0)*q2.v(0)) - (q1.v(1)*q2.v(1)) - (q1.v(2)*q2.v(2));
-      q.v(0) = (q1.a * q2.v(0)) + (q1.v(0)*q2.a) + (q1.v(1)*q2.v(2)) - (q1.v(2)*q2.v(1));
-      q.v(1) = (q1.a * q2.v(1)) + (q1.v(1)*q2.a) + (q1.v(2)*q2.v(0)) - (q1.v(0)*q2.v(2));
-      q.v(2) = (q1.a * q2.v(2)) + (q1.v(2)*q2.a) + (q1.v(0)*q2.v(1)) - (q1.v(1)*q2.v(0));
-      
-      return;
-    }
     
-    /*bool OneTaskInverseKinematics::TFCallback(const tf2_msgs::TFMessage::ConstPtr &msg)
-    {
-      return true;
-    }*/
-
     void OneTaskInverseKinematics::command(const bartender_control::bartender_msg::ConstPtr &msg)
     {
 	
 	//************************** reading message from manager **************************
 	x_des_pose.pose = msg->des_frame;
 	
-        if (!msg->arrived) cmd_flag_ = 1;
-        if (msg->arrived) cmd_flag_ = 0;
+        if (msg->run) cmd_flag_ = 1;
+        if (!msg->run) cmd_flag_ = 0;
 	
 	goal_ref = msg->goal_tf;
 	
 	ns_param = msg->arm;	
-	//**********************************************************************************
 	
-	std::string arm_EE = ns_param + "/" + controller + "/EE";
+	// ROS_INFO("DES_callback: x=%f| y=%f| z=%f", x_des_pose.pose.position.x, x_des_pose.pose.position.y, x_des_pose.pose.position.z);
+	
+	arm_EE = ns_param + "/" + controller + "/EE";
 
 	try
 	{
 	    listener.waitForTransform( goal_ref, arm_EE, ros::Time::now(), ros::Duration(1.0));
 	    listener.lookupTransform( goal_ref, arm_EE, ros::Time(0), Goal_T_Ee);   
-	    
-	    /*listener.waitForTransform( arm_EE, goal_ref, ros::Time::now(), ros::Duration(1.0));
-	    listener.lookupTransform( arm_EE, goal_ref, ros::Time(0), Goal_T_Ee);*/
+
 	}
 	catch (tf::TransformException ex)
 	{
@@ -239,12 +214,16 @@ namespace bartender_control
 	
 	bartender_control::OneTaskInverseKinematics::FrameToPose(x_,x_pose);
 
-	bartender_control::OneTaskInverseKinematics::Error(x_pose,x_des_pose, x_error);
+	/*cout<<arm_EE<<endl;
+	ROS_INFO("EE x: %f | y: %f | z: %f", x_pose.pose.position.x, x_pose.pose.position.y, x_pose.pose.position.z);	
+	ROS_INFO("GOAL x: %f | y: %f | z: %f", x_des_pose.pose.position.x, x_des_pose.pose.position.y, x_des_pose.pose.position.z);*/
+	
+	bartender_control::OneTaskInverseKinematics::Error(x_pose,x_des_pose, x_error);	
 	
 	std_msgs::Float64MultiArray msg_error;
-	for(int i = 0; i < x_error.size(); i++) msg_error.data.push_back( x_error.at(i) );
+	for(int i = 0; i < x_error.size(); i++) msg_error.data.at(i) = x_error.at(i);
 	pub_check_error.publish(msg_error);
-
+	
     }
     
     //  Controller function:: Multy Task Inverse Kinematics
@@ -271,7 +250,7 @@ namespace bartender_control
 
         if (cmd_flag_)
         {
-
+	    ROS_INFO("ERROR x: %f | y: %f | z: %f", x_error.at(0), x_error.at(1), x_error.at(2));
             //**********************************FIRST TASK***********************************************************************
             
             // computing q_dot
