@@ -23,8 +23,7 @@ namespace bartender_control
 	  pub_check_initial = nh_.advertise<geometry_msgs::Pose>("initial_position", 250);
 	  pub_pose = nh_.advertise<geometry_msgs::PoseStamped>("position", 250);
 
-	  sub_bartender_cmd = nh_.subscribe("command", 250, &OneTaskInverseKinematics::command, this);
-	  
+	  sub_bartender_cmd = nh_.subscribe("command", 250, &OneTaskInverseKinematics::command, this);	  
 	  sub_bartender_config = nh_.subscribe("config",250, &OneTaskInverseKinematics::configCallback, this);*/
 	  
 	  /*f = boost::bind(&OneTaskInverseKinematics::config_callback, this, _1, _2);   
@@ -78,7 +77,7 @@ namespace bartender_control
 	
 	//**************************Default values**************************//
 	
-	for(int i=0; i<6; i++) x_error[i] = 1;
+	//for(int i=0; i<6; i++) x_error[i] = 1;
 	
 	alpha1 = 8;
 	alpha2 = 0.4;
@@ -121,6 +120,8 @@ namespace bartender_control
 	//************************** reading message from manager **************************
 	x_des_pose.pose = msg->des_frame;
 	
+	ROS_INFO("DEBUG -> commandCallback");
+	
         if (msg->run) cmd_flag_ = 1;
         if (!msg->run) cmd_flag_ = 0;
 	
@@ -128,11 +129,9 @@ namespace bartender_control
 	
 	ns_param = msg->arm;	
 	
-	// ROS_INFO("DES_callback: x=%f| y=%f| z=%f", x_des_pose.pose.position.x, x_des_pose.pose.position.y, x_des_pose.pose.position.z);
-	
 	arm_EE = ns_param + "/" + controller + "/EE";
 
-	try
+	/*try
 	{
 	    listener.waitForTransform( goal_ref, arm_EE, ros::Time::now(), ros::Duration(1.0));
 	    listener.lookupTransform( goal_ref, arm_EE, ros::Time(0), Goal_T_Ee);   
@@ -164,18 +163,18 @@ namespace bartender_control
 	{
 	    ROS_ERROR("%s",ex.what());               
 	    return;
-	}
+	}*/
 	
 
 	/*x_pose.pose.position.x = W_T_Ee.getOrigin().getX(); 
 	x_pose.pose.position.y = W_T_Ee.getOrigin().getY(); 
 	x_pose.pose.position.z = W_T_Ee.getOrigin().getZ();
 	tf::quaternionTFToMsg(W_T_Ee.getRotation(), x_pose.pose.orientation);	
-	x_pose.header.stamp = ros::Time::now();*/
+	x_pose.header.stamp = ros::Time::now();
 	
 	
 	
-	/*x_des_pose.pose.position.x = W_T_Goal.getOrigin().getX();
+	x_des_pose.pose.position.x = W_T_Goal.getOrigin().getX();
 	x_des_pose.pose.position.y = W_T_Goal.getOrigin().getY();
 	x_des_pose.pose.position.z = W_T_Goal.getOrigin().getZ();
 	tf::quaternionTFToMsg(W_T_Goal.getRotation(), x_des_pose.pose.orientation);	
@@ -213,16 +212,17 @@ namespace bartender_control
         fk_pos_solver_->JntToCart(joint_msr_states_.q, x_);
 	
 	bartender_control::OneTaskInverseKinematics::FrameToPose(x_,x_pose);
-
-	/*cout<<arm_EE<<endl;
-	ROS_INFO("EE x: %f | y: %f | z: %f", x_pose.pose.position.x, x_pose.pose.position.y, x_pose.pose.position.z);	
-	ROS_INFO("GOAL x: %f | y: %f | z: %f", x_des_pose.pose.position.x, x_des_pose.pose.position.y, x_des_pose.pose.position.z);*/
+	
+	cout<<arm_EE<<endl;
+	//ROS_INFO("EE x: %f | y: %f | z: %f", x_pose.pose.position.x, x_pose.pose.position.y, x_pose.pose.position.z);	
+	//ROS_INFO("EE kdl x: %f | y: %f | z: %f", x_.p(0), x_.p(1), x_.p(2));
+	ROS_INFO("GOAL x: %f | y: %f | z: %f", x_des_pose.pose.position.x, x_des_pose.pose.position.y, x_des_pose.pose.position.z);
 	
 	bartender_control::OneTaskInverseKinematics::Error(x_pose,x_des_pose, x_error);	
 	
 	std_msgs::Float64MultiArray msg_error;
-	for(int i = 0; i < x_error.size(); i++) msg_error.data.push_back( x_error.at(i) );
-	pub_check_error.publish(msg_error);
+ 	for(int i = 0; i < x_error.size(); i++) msg_error.data.push_back( x_error.at(i) );
+ 	pub_check_error.publish(msg_error);
 	
     }
     
@@ -241,6 +241,8 @@ namespace bartender_control
 
         bartender_control::OneTaskInverseKinematics::param_update();    //  Calculation of parameters used by controller
 
+	bartender_control::OneTaskInverseKinematics::Error(x_pose,x_des_pose, x_error);	
+	
         //**********************************************************************************************************************//
         //  In this section you can find the MultyTask Kinematic control. The first task (alpha1) is the position control of    //
         //  the kuka-bartender to the desired position (x_des_) using the inverse kinematic control q = alpha1*pinv(J)*x_err_.  //
@@ -250,8 +252,11 @@ namespace bartender_control
 
         if (cmd_flag_)
         {
-	    ROS_INFO("ERROR x: %f | y: %f | z: %f", x_error.at(0), x_error.at(1), x_error.at(2));
-            //**********************************FIRST TASK***********************************************************************
+	    /*cout<<ns_param<<endl;
+	    ("POSE_DES: x=%f| y=%f| z=%f", x_des_pose.pose.position.x, x_des_pose.pose.position.y, x_des_pose.pose.position.z);
+	    ROS_INFO("ERROR x: %f | y: %f | z: %f", x_error.at(0), x_error.at(1), x_error.at(2));*/
+            
+	    //**********************************FIRST TASK***********************************************************************
             
             // computing q_dot
             for (int i = 0; i < J_pinv_.rows(); i++)

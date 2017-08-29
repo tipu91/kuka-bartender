@@ -35,18 +35,21 @@ int main(int argc, char **argv)
 
 	bool select = true;
 	
+	bool arrived = false;
+	
 	int action;
 	
 	while(ros::ok())
 	//while(ros::ok() && manager.run_manager)
 	{
 		
-		//ros::spinOnce();
+		// ros::spinOnce();
 		
 		if(select) {
-		  // manager.DrinkSelection();
 		  action = 1;
 		  select = false;
+		  manager.ToPose("right_arm", "vodka", manager.pub_bartender_cmd_right,true);
+		  manager.ToPose("left_arm", "lemon", manager.pub_bartender_cmd_left,false);
 		}
 		
 		switch(action){
@@ -54,20 +57,43 @@ int main(int argc, char **argv)
 		  // Right arm go to grasping pose
 		  case 1:
 		    
-		    manager.ToPose(manager.msg_right, "right_arm", "vodka", manager.pub_bartender_cmd_right,true);
-		    manager.ToPose(manager.msg_left, "left_arm", "coca", manager.pub_bartender_cmd_left,false);
+		    ROS_INFO("Action 1");
 		        
-		    if( manager.compare_error(manager.error_right) )
+		    if( manager.compare_error(manager.error_right) && !arrived)
 		    {
-		      ROS_INFO("ready for grasp");
-		      select = true;
-		      manager.ToPose(manager.msg_right, "right_arm", "vodka", manager.pub_bartender_cmd_right,false);
-		      //action = 2;
-		    }
+			ROS_INFO("ready for grasp");
+			arrived = true;
+			//select = true;
+			manager.ToPose("right_arm", "vodka", manager.pub_bartender_cmd_right,false);
+			
+			//grasp selection
+			std::string ans;
+
+			while(action==1){
+			    std::cout << "Are You ready for grasping? (y/n) " << std::endl;
+			    getline (std::cin, ans);
+			    
+			    if(ans.compare("y")) {
+			      action = 2;
+			      manager.Grasping(closure_value,s_r);
+			    }
+			    else sleep(2);
+			}
+		    
+		      
+		     }
 		    
 		    ros::spinOnce();
 		  
 		    break;
+		    
+		  case 2:
+		    
+		    ROS_INFO("Action 2");
+		    
+		    break;
+		    
+		    
 		}
 		    
 		    

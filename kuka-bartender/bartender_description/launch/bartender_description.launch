@@ -1,5 +1,3 @@
-<?xml version="1.0"?>
-
 <launch>
     <!-- LAUNCH INTERFACE -->
     <arg name="gui" default="false" />
@@ -188,4 +186,3 @@
 <node name="glass_puring_tf" pkg="tf" type="static_transform_publisher" args="0 0.2 0 0 0 0 glass glass_puring 100"/>
 
 </launch>
-

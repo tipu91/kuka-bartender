@@ -51,7 +51,7 @@ class BartenderManager {
 		void Init();
 		void Grasping(std::vector<int> closure_value, std::string s);
 		void OpeningHand(std::vector<int> opening_value, std::string s);
-		void ToPose(bartender_control::bartender_msg msg, std::string arm, std::string target, ros::Publisher pub, bool stop);
+		void ToPose(std::string arm, std::string target, ros::Publisher pub, bool stop);
 		bool compare_error(double err[6]);
 		
 		// config file
@@ -105,6 +105,8 @@ class BartenderManager {
 		int print;
 
 		std::vector<double> vodka_;
+		
+		bool grasp;
 
 	// private:
 
@@ -137,6 +139,7 @@ class BartenderManager {
 		geometry_msgs::Pose coca;
 		geometry_msgs::Pose glass;
 		geometry_msgs::Pose puring;
+		geometry_msgs::Pose prova;
 		
 
 		geometry_msgs::Pose pose_rot_;

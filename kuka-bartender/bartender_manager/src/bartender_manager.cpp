@@ -28,8 +28,8 @@ BartenderManager::BartenderManager()
 
     n_.param<int>("printscreen", print, 0);
     
-    for(int i=0; i<6; i++) error_right[i] = 1;
-    for(int i=0; i<6; i++) error_left[i] = 1;
+    /*for(int i=0; i<6; i++) error_right[i] = 1;
+    for(int i=0; i<6; i++) error_left[i] = 1;*/
 }
 
 BartenderManager::~BartenderManager() {}
@@ -162,14 +162,13 @@ void BartenderManager::Init ()
 	  ROS_ERROR("%s",ex.what());
 	  ros::Duration(1.0).sleep();
 	}
-      
 	
 	bottle["vodka"] = vodka;
 	bottle["lemon"] = lemon;
 	bottle["rum"] = rum;
 	bottle["coca"] = coca;
 	bottle["glass"] = glass;
-	
+
 	ROS_INFO("vodka: x = %f | y = %f | z = %f", vodka.position.x, vodka.position.y, vodka.position.z);
 	ROS_INFO("rum: x = %f | y = %f | z = %f", rum.position.x, rum.position.y, rum.position.z);
 	ROS_INFO("coca: x = %f | y = %f | z = %f", coca.position.x, coca.position.y, coca.position.z);
@@ -200,17 +199,22 @@ double *BartenderManager::EulerToQuaternion(float R, float P, float Y)
 
 }
 
-void BartenderManager::ToPose(bartender_control::bartender_msg msg, std::string arm, std::string target, ros::Publisher pub, bool run)
+void BartenderManager::ToPose(std::string arm, std::string target, ros::Publisher pub, bool run)
 {
-	msg.arm = arm;		  
-	msg.goal_tf = target;		    
+  
+	bartender_control::bartender_msg msg; 
+	
+	msg.arm = arm;  
+	msg.goal_tf = target;    
 	msg.des_frame = bottle[target];
 	msg.run = run;
     
 	pub.publish(msg);
 	
-	//ROS_INFO("DES_POSE x=%f | y=%f | z=%f", msg.des_frame.position.x, msg.des_frame.position.y, msg.des_frame.position.z);
-
+	if(run) {
+	  cout<<arm<<endl;
+	  ROS_INFO("DES_POSE x=%f | y=%f | z=%f", msg.des_frame.position.x, msg.des_frame.position.y, msg.des_frame.position.z);
+	}
 }
 
 void BartenderManager::Grasping(std::vector<int> closure_value, std::string s)
