@@ -52,7 +52,7 @@ class BartenderManager {
 		void Grasping(std::vector<int> closure_value, std::string s);
 		void OpeningHand(std::vector<int> opening_value, std::string s);
 		void ToPose(std::string arm, std::string target, ros::Publisher pub, bool stop);
-		bool compare_error(double err[6]);
+		bool compare_error(double err[6], double thr_lin, double thr_rot);
 		
 		// config file
 		dynamic_reconfigure::Server<bartender_manager::managerConfig> server;
@@ -92,11 +92,9 @@ class BartenderManager {
 		double threshold = 0.02;
 		double threshold_rot = 0.05;
 
-		tf::StampedTransform world_T_vodka;
-		tf::StampedTransform world_T_rum;
-		tf::StampedTransform world_T_lemon;
-		tf::StampedTransform world_T_coca;
-		tf::StampedTransform world_T_glass;
+		tf::StampedTransform world_T_rightPour;
+		tf::StampedTransform world_T_leftPour;
+		
 		tf::StampedTransform world_T_rightGrasp;
 		tf::StampedTransform world_T_leftGrasp;
 
@@ -135,19 +133,15 @@ class BartenderManager {
 		KDL::Frame x_bottle;
 		geometry_msgs::Pose bottle_right, bottle_left;
 		
-		geometry_msgs::Pose vodka;
-		geometry_msgs::Pose rum;
-		geometry_msgs::Pose lemon;
-		geometry_msgs::Pose coca;
-		geometry_msgs::Pose glass;
-		geometry_msgs::Pose puring;
+		geometry_msgs::Pose right_pour;
+		geometry_msgs::Pose left_pour;
 		geometry_msgs::Pose right_grasp;
 		geometry_msgs::Pose left_grasp;
 		
 
 		geometry_msgs::Pose pose_rot_;
 
-		std::map<std::string,geometry_msgs::Pose > bottle;	//Positions array: the first fild is the name (STRING), second is the position (VECTOR) 
+		std::map<std::string,geometry_msgs::Pose > pose;	//Positions array: the first fild is the name (STRING), second is the position (VECTOR) 
 
 		float Z1_eul_bott, Y_eul_bott, Z2_eul_bott;
 		double *q_bottle, *q_err_right, *q_err_left, *q_init_right, *q_init_left;

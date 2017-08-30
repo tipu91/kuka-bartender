@@ -55,13 +55,12 @@ int main(int argc, char **argv)
 		    
 		    if(select) {
 		      select = false;
-		      arrived = false;
 		      manager.ToPose("right_arm", "right_grasp", manager.pub_bartender_cmd_right,true);
 		    }
 		    
 		    ROS_INFO("Action 1");
 		        
-		    if( manager.compare_error(manager.error_right) )
+		    if( manager.compare_error(manager.error_right, 0.05, 0.05) )
 		    {
 			ROS_INFO("ready for grasp");
 			manager.ToPose("right_arm", "right_grasp", manager.pub_bartender_cmd_right,false);
@@ -93,13 +92,12 @@ int main(int argc, char **argv)
 		    
 		    if(select) {
 		      select = false;
-		      arrived = false;
 		      manager.ToPose("left_arm", "left_grasp", manager.pub_bartender_cmd_left,true);
 		    }
 		    
 		    ROS_INFO("Action 2");
 		        
-		    if( manager.compare_error(manager.error_right) )
+		    if( manager.compare_error(manager.error_left, 0.05, 0.05) )
 		    {
 			ROS_INFO("ready for grasp");
 			manager.ToPose("left_arm", "left_grasp", manager.pub_bartender_cmd_left,false);
@@ -126,6 +124,16 @@ int main(int argc, char **argv)
 		    
 		    break;
 		    
+		  // To pouring position  
+		  case 3:
+		    
+		    if(select) {
+		      select = false;
+		      manager.ToPose("left_arm", "left_pour", manager.pub_bartender_cmd_left,true);
+		      manager.ToPose("right_arm", "right_pour", manager.pub_bartender_cmd_right,true);
+		    }
+		    
+		   break;
 		    
 		}
 		    

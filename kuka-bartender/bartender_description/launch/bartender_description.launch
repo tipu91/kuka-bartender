@@ -180,4 +180,6 @@
 
 <node name="right_grasping" pkg="tf" type="static_transform_publisher" args="-1.2 0.5 0.3 1.57 -3.14 -1.57 bartender_anchor right_grasp 100"/>
 <node name="left_grasping" pkg="tf" type="static_transform_publisher" args="-1.2 -0.5 0.3 1.57 -3.14 -1.57 bartender_anchor left_grasp 100"/>
+<node name="right_pouring" pkg="tf" type="static_transform_publisher" args="-0.9 0.08 0.3 1.57 -3.14 -1.57 bartender_anchor right_pour 100"/>
+<node name="left_pouring" pkg="tf" type="static_transform_publisher" args="-0.9 -0.08 0.2 1.57 -3.14 -1.57 bartender_anchor left_pour 100"/>
 </launch>

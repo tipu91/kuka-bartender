@@ -90,64 +90,6 @@ void BartenderManager::checkCallback_left_initial(const geometry_msgs::Pose::Con
 void BartenderManager::Init ()
 {
 	
-	/*try{
-	  listener.waitForTransform( "bartender_anchor", "vodka",ros::Time::now(), ros::Duration(3));
-	  listener.lookupTransform( "bartender_anchor", "vodka", ros::Time(0), world_T_vodka);
-	  
-	  vodka.position.x = world_T_vodka.getOrigin().getX(); 
-	  vodka.position.y = world_T_vodka.getOrigin().getY(); 
-	  vodka.position.z = world_T_vodka.getOrigin().getZ();
-	  tf::quaternionTFToMsg(world_T_vodka.getRotation(), vodka.orientation);
-	}
-	catch (tf::TransformException ex){
-	  ROS_ERROR("%s",ex.what());
-	  ros::Duration(1.0).sleep();
-	}
-	
-	try{
-	  listener.waitForTransform( "bartender_anchor","rum", ros::Time::now(), ros::Duration(3));
-	  listener.lookupTransform( "bartender_anchor", "rum", ros::Time(0), world_T_rum);
-	  
-	  rum.position.x = world_T_rum.getOrigin().getX(); 
-	  rum.position.y = world_T_rum.getOrigin().getY(); 
-	  rum.position.z = world_T_rum.getOrigin().getZ();
-	  tf::quaternionTFToMsg(world_T_rum.getRotation(), rum.orientation);
-	}
-	catch (tf::TransformException ex){
-	  ROS_ERROR("%s",ex.what());
-	  ros::Duration(1.0).sleep();
-	}
-	
-	try{
-	  
-	  listener.waitForTransform( "bartender_anchor", "coca", ros::Time::now(), ros::Duration(3));
-	  listener.lookupTransform( "bartender_anchor", "coca", ros::Time(0), world_T_coca);
-	  
-	  coca.position.x = world_T_coca.getOrigin().getX(); 
-	  coca.position.y = world_T_coca.getOrigin().getY(); 
-	  coca.position.z = world_T_coca.getOrigin().getZ();
-	  tf::quaternionTFToMsg(world_T_coca.getRotation(), coca.orientation);
-	}
-	catch (tf::TransformException ex){
-	  ROS_ERROR("%s",ex.what());
-	  ros::Duration(1.0).sleep();
-	}
-	
-	try{
-	  
-	  listener.waitForTransform( "bartender_anchor", "lemon", ros::Time::now(), ros::Duration(3));
-	  listener.lookupTransform( "bartender_anchor", "lemon", ros::Time(0), world_T_lemon);
-	  
-	  lemon.position.x = world_T_lemon.getOrigin().getX(); 
-	  lemon.position.y = world_T_lemon.getOrigin().getY(); 
-	  lemon.position.z = world_T_lemon.getOrigin().getZ();
-	  tf::quaternionTFToMsg(world_T_lemon.getRotation(), lemon.orientation);
-	}
-	catch (tf::TransformException ex){
-	  ROS_ERROR("%s",ex.what());
-	  ros::Duration(1.0).sleep();
-	}*/
-	
 	try{
 	  
 	  listener.waitForTransform( "bartender_anchor", "right_grasp", ros::Time::now(), ros::Duration(3));
@@ -178,14 +120,41 @@ void BartenderManager::Init ()
 	  ros::Duration(1.0).sleep();
 	}
 	
-	/*bottle["vodka"] = vodka;
-	bottle["lemon"] = lemon;
-	bottle["rum"] = rum;
-	bottle["coca"] = coca;
-	bottle["glass"] = glass;*/
+	try{
+	  
+	  listener.waitForTransform( "bartender_anchor", "right_pour", ros::Time::now(), ros::Duration(3));
+	  listener.lookupTransform( "bartender_anchor", "right_pour", ros::Time(0), world_T_rightPour);
+	  
+	  right_pour.position.x = world_T_rightPour.getOrigin().getX(); 
+	  right_pour.position.y = world_T_rightPour.getOrigin().getY(); 
+	  right_pour.position.z = world_T_rightPour.getOrigin().getZ();
+	  tf::quaternionTFToMsg(world_T_rightPour.getRotation(), right_pour.orientation);
+	}
+	catch (tf::TransformException ex){
+	  ROS_ERROR("%s",ex.what());
+	  ros::Duration(1.0).sleep();
+	}
 	
-	bottle["right_grasp"] = right_grasp;
-	bottle["left_grasp"] = left_grasp;
+	try{
+	  
+	  listener.waitForTransform( "bartender_anchor", "left_pour", ros::Time::now(), ros::Duration(3));
+	  listener.lookupTransform( "bartender_anchor", "left_pour", ros::Time(0), world_T_leftPour);
+	  
+	  left_pour.position.x = world_T_leftPour.getOrigin().getX(); 
+	  left_pour.position.y = world_T_leftPour.getOrigin().getY(); 
+	  left_pour.position.z = world_T_leftPour.getOrigin().getZ();
+	  tf::quaternionTFToMsg(world_T_leftPour.getRotation(), left_pour.orientation);
+	}
+	catch (tf::TransformException ex){
+	  ROS_ERROR("%s",ex.what());
+	  ros::Duration(1.0).sleep();
+	}
+	
+	
+	pose["right_grasp"] = right_grasp;
+	pose["left_grasp"] = left_grasp;
+	pose["right_pour"] = right_pour;
+	pose["left_pour"] = left_pour;
 
 }
 
@@ -196,7 +165,7 @@ void BartenderManager::ToPose(std::string arm, std::string target, ros::Publishe
 	
 	msg.arm = arm;  
 	msg.goal_tf = target;    
-	msg.des_frame = bottle[target];
+	msg.des_frame = pose[target];
 	msg.run = run;
     
 	pub.publish(msg);
@@ -261,11 +230,11 @@ void BartenderManager::OpeningHand(std::vector<int> opening_value, std::string s
 
 }
 
-bool BartenderManager::compare_error(double err[6])
+bool BartenderManager::compare_error(double err[6], double thr_lin, double thr_rot)
 {
 	static bool near_p;
 
-	if ( (err[0] < threshold) && (err[1] < threshold) && (err[2] < threshold) &&  (err[3] < threshold_rot) && (err[4] < threshold_rot) && (err[5] < threshold_rot) ) near_p = true;
+	if ( (fabs(err[0]) < thr_lin) && (fabs(err[1]) < thr_lin) && (fabs(err[2]) < thr_lin) &&  (fabs(err[3]) < thr_rot) && (fabs(err[4]) < thr_rot) && (fabs(err[5]) < thr_rot) ) near_p = true;
 	else near_p = false;
 
 	return near_p;
