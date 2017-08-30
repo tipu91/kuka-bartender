@@ -74,6 +74,7 @@ namespace bartender_control
 		ros::Publisher pub_check_error;
 		ros::Publisher pub_check_initial;
 		ros::Publisher pub_pose;
+		ros::Publisher des_pose_bag;
 
 		KDL::Frame x_;		//current pose
 		geometry_msgs::PoseStamped x_pose;

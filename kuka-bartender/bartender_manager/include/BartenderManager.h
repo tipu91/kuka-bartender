@@ -98,7 +98,7 @@ class BartenderManager {
 		tf::StampedTransform world_T_rightGrasp;
 		tf::StampedTransform world_T_leftGrasp;
 
-		tf::StampedTransform world_T_puring;
+		tf::StampedTransform world_T_pouring;
 		
 		tf::TransformListener listener;
 
@@ -137,6 +137,7 @@ class BartenderManager {
 		geometry_msgs::Pose left_pour;
 		geometry_msgs::Pose right_grasp;
 		geometry_msgs::Pose left_grasp;
+		geometry_msgs::Pose pouring;
 		
 
 		geometry_msgs::Pose pose_rot_;

@@ -65,6 +65,8 @@ namespace bartender_control
         pub_check_error = nh_.advertise<std_msgs::Float64MultiArray>("error", 250);
         pub_check_initial = nh_.advertise<geometry_msgs::Pose>("initial_position", 250);
 	pub_pose = nh_.advertise<geometry_msgs::PoseStamped>("position", 250);
+	
+	des_pose_bag = nh_.advertise<geometry_msgs::PoseStamped>("des_pose", 250);
 
         sub_bartender_cmd = nh_.subscribe("command", 250, &OneTaskInverseKinematics::command, this);
 	sub_bartender_config = nh_.subscribe("config",250, &OneTaskInverseKinematics::configCallback, this);
@@ -143,6 +145,8 @@ namespace bartender_control
 	bartender_control::OneTaskInverseKinematics::FrameToPose(x_,x_pose);
 
 	bartender_control::OneTaskInverseKinematics::Error(x_pose,x_des_pose, x_error);
+	
+	des_pose_bag.publish(x_des_pose);
 	
 	std_msgs::Float64MultiArray msg_error;
 	for(int i = 0; i < x_error.size(); i++) msg_error.data.push_back( x_error.at(i) );

@@ -45,6 +45,9 @@ void BartenderManager::config_callback(bartender_manager::managerConfig& config,
     
     run_manager = config.run;
     
+    /*pub_bartender_config_right.publish(msg_config);
+    pub_bartender_config_left.publish(msg_config);*/
+    
 }
 
 void BartenderManager::checkCallbackPoseright(const geometry_msgs::PoseStamped::ConstPtr & msg_pose) {
@@ -150,11 +153,27 @@ void BartenderManager::Init ()
 	  ros::Duration(1.0).sleep();
 	}
 	
+	try{
+	  
+	  listener.waitForTransform( "bartender_anchor", "pouring", ros::Time::now(), ros::Duration(3));
+	  listener.lookupTransform( "bartender_anchor", "pouring", ros::Time(0), world_T_pouring);
+	  
+	  pouring.position.x = world_T_pouring.getOrigin().getX(); 
+	  pouring.position.y = world_T_pouring.getOrigin().getY(); 
+	  pouring.position.z = world_T_pouring.getOrigin().getZ();
+	  tf::quaternionTFToMsg(world_T_pouring.getRotation(), pouring.orientation);
+	}
+	catch (tf::TransformException ex){
+	  ROS_ERROR("%s",ex.what());
+	  ros::Duration(1.0).sleep();
+	}
+	
 	
 	pose["right_grasp"] = right_grasp;
 	pose["left_grasp"] = left_grasp;
 	pose["right_pour"] = right_pour;
 	pose["left_pour"] = left_pour;
+	pose["pouring"] = pouring;
 
 }
 

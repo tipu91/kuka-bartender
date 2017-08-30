@@ -56,10 +56,9 @@ int main(int argc, char **argv)
 		    if(select) {
 		      select = false;
 		      manager.ToPose("right_arm", "right_grasp", manager.pub_bartender_cmd_right,true);
+		      ROS_INFO("Action 1");
 		    }
-		    
-		    ROS_INFO("Action 1");
-		        
+
 		    if( manager.compare_error(manager.error_right, 0.05, 0.05) )
 		    {
 			ROS_INFO("ready for grasp");
@@ -93,10 +92,9 @@ int main(int argc, char **argv)
 		    if(select) {
 		      select = false;
 		      manager.ToPose("left_arm", "left_grasp", manager.pub_bartender_cmd_left,true);
+		      ROS_INFO("Action 2");
 		    }
 		    
-		    ROS_INFO("Action 2");
-		        
 		    if( manager.compare_error(manager.error_left, 0.05, 0.05) )
 		    {
 			ROS_INFO("ready for grasp");
@@ -131,9 +129,73 @@ int main(int argc, char **argv)
 		      select = false;
 		      manager.ToPose("left_arm", "left_pour", manager.pub_bartender_cmd_left,true);
 		      manager.ToPose("right_arm", "right_pour", manager.pub_bartender_cmd_right,true);
+		      ROS_INFO("Action 3");
+		    }
+		        
+		    if( manager.compare_error(manager.error_right, 0.08, 0.05) && manager.compare_error(manager.error_left, 0.08, 0.05) )
+		    {
+			ROS_INFO("ready for pouring");
+			
+			manager.ToPose("left_arm", "left_pour", manager.pub_bartender_cmd_left,false);
+			manager.ToPose("right_arm", "right_pour", manager.pub_bartender_cmd_right,false);
+			
+			//grasp selection
+			std::string ans;
+
+			while(action==3){
+			    std::cout << "Are You ready for pouring? (y/n) " << std::endl;
+			    getline (std::cin, ans);
+			    
+			    if(ans.compare("y") == 0) {
+			      action = 4;
+			      select = true;
+			    }
+			    else sleep(2);
+			}
+		    
+		      
+		     }
+		    
+		    ros::spinOnce();
+		    
+		    break;
+		    
+		  // Pouring action 
+		  case 4:
+		    
+		    if(select) {
+		      select = false;
+		      manager.ToPose("right_arm", "pouring", manager.pub_bartender_cmd_right,true);
+		      ROS_INFO("Action 4");
 		    }
 		    
-		   break;
+		        
+		    if( manager.compare_error(manager.error_right, 0.05, 0.05) )
+		    {
+			ROS_INFO("ready for shaking");
+			
+			manager.ToPose("right_arm", "pouring", manager.pub_bartender_cmd_right,false);
+			
+			//grasp selection
+			std::string ans;
+
+			while(action==4){
+			    std::cout << "Are You ready for shaking? (y/n) " << std::endl;
+			    getline (std::cin, ans);
+			    
+			    if(ans.compare("y") == 0) {
+			      action = 5;
+			      select = true;
+			    }
+			    else sleep(2);
+			}
+		    
+		      
+		     }
+		    
+		    ros::spinOnce();
+		    
+		    break;
 		    
 		}
 		    

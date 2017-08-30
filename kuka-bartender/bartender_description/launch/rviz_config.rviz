@@ -913,6 +913,10 @@ Visualization Manager:
           Value: false
         left_hand_thumb_proximal_link:
           Value: false
+        left_pour:
+          Value: true
+        pouring:
+          Value: true
         r_ef:
           Value: false
         right_arm/bartender_control/EE:
@@ -1055,6 +1059,8 @@ Visualization Manager:
           Value: false
         right_hand_thumb_proximal_link:
           Value: false
+        right_pour:
+          Value: true
         table_leg_0_link:
           Value: false
         table_leg_1_link:
@@ -1188,6 +1194,8 @@ Visualization Manager:
                 {}
             left_grasp:
               {}
+            left_pour:
+              {}
             right_arm_base_link:
               right_arm_1_link:
                 right_arm_2_link:
@@ -1289,6 +1297,9 @@ Visualization Manager:
                 {}
             right_grasp:
               {}
+            right_pour:
+              pouring:
+                {}
             table_plate_link:
               table_leg_0_link:
                 {}
@@ -1335,22 +1346,22 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 2.44706
+      Distance: 2.33347
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.06
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: -0.887518
-        Y: 0.000404811
-        Z: 0.200867
+        X: -0.939885
+        Y: 0.0130467
+        Z: 0.109534
       Name: Current View
       Near Clip Distance: 0.01
-      Pitch: 0.445398
+      Pitch: 0.520398
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 3.17858
+      Yaw: 3.14358
     Saved: ~
 Window Geometry:
   Displays:
