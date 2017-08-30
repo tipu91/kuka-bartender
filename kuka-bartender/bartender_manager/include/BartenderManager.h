@@ -97,6 +97,8 @@ class BartenderManager {
 		tf::StampedTransform world_T_lemon;
 		tf::StampedTransform world_T_coca;
 		tf::StampedTransform world_T_glass;
+		tf::StampedTransform world_T_rightGrasp;
+		tf::StampedTransform world_T_leftGrasp;
 
 		tf::StampedTransform world_T_puring;
 		
@@ -139,7 +141,8 @@ class BartenderManager {
 		geometry_msgs::Pose coca;
 		geometry_msgs::Pose glass;
 		geometry_msgs::Pose puring;
-		geometry_msgs::Pose prova;
+		geometry_msgs::Pose right_grasp;
+		geometry_msgs::Pose left_grasp;
 		
 
 		geometry_msgs::Pose pose_rot_;

@@ -10,6 +10,7 @@
 #include <sensor_msgs/JointState.h>
 
 #include <bartender_control/bartender_msg.h> 
+#include <bartender_control/cfg_msg.h> 
 
 #include <kdl/chainfksolverpos_recursive.hpp>
 #include <kdl/chainiksolvervel_pinv.hpp>
@@ -57,25 +58,16 @@ namespace bartender_control
 		void update(const ros::Time& time, const ros::Duration& period);
 		void command(const bartender_control::bartender_msg::ConstPtr &msg);
 		void param_update();
-		//bool TFCallback(const tf2_msgs::TFMessage::ConstPtr &msg);
+		void configCallback(const bartender_control::cfg_msg::ConstPtr &msg);
 		void Error(geometry_msgs::PoseStamped& p_curr, geometry_msgs::PoseStamped& p_des, std::vector<double> &error);
-		void quaternionProduct(quaternion_ q1, quaternion_ q2, quaternion_ &q);
 		Eigen::Matrix<double, 7, 1> potentialEnergy(KDL::JntArray q);
-		static void toEulerianAngle(geometry_msgs::PoseStamped& q, double& roll, double& pitch, double& yaw);
-		
-		double roll, pitch, yaw;
-		
-		// config file
-		/*dynamic_reconfigure::Server<bartender_control::OneTaskInverseKinematics::controlConfig> server;
-		dynamic_reconfigure::Server<bartender_control::OneTaskInverseKinematics::controlConfig>::CallbackType f;
-		void config_callback(bartender_control::OneTaskInverseKinematics::controlConfig &config, uint32_t level);*/
 		
 		inline const char * const BoolToString(bool b)
 		{
 		  return b ? "true" : "false";
 		}
 
-		ros::Subscriber sub_bartender_cmd;
+		ros::Subscriber sub_bartender_cmd, sub_bartender_config;
 		
 		ros::Subscriber sub_bartender_goal, sub_bartender_tf;
 		
@@ -114,15 +106,12 @@ namespace bartender_control
 		KDL::Vector rot_err;
 		KDL::Vector lin_err;
 		
-        Eigen::Matrix<double, 7, 1> q_null;
-
-        double rot_z;
-        bool do_rot_Z;
-	
-	tf::StampedTransform Goal_T_Ee, W_T_Ee, W_T_Goal;
-	tf::TransformListener listener;
-	
-	std::string goal_ref;
+		Eigen::Matrix<double, 7, 1> q_null;
+		
+		tf::StampedTransform Goal_T_Ee, W_T_Ee, W_T_Goal;
+		tf::TransformListener listener;
+		
+		std::string goal_ref;
 
 		double Roll_x_init, Pitch_x_init, Yaw_x_init;
 

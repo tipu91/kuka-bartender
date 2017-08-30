@@ -64,16 +64,6 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-        coca_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        glass_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
         l_ef:
           Alpha: 1
           Show Axes: false
@@ -377,11 +367,6 @@ Visualization Manager:
           Show Trail: false
           Value: true
         left_hand_thumb_proximal_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        lemon_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -693,11 +678,6 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        rum_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
         table_leg_0_link:
           Alpha: 1
           Show Axes: false
@@ -724,11 +704,6 @@ Visualization Manager:
           Show Trail: false
           Value: true
         torso_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        vodka_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -796,14 +771,6 @@ Visualization Manager:
         All Enabled: false
         bartender_anchor:
           Value: false
-        coca:
-          Value: true
-        coca_link:
-          Value: false
-        glass:
-          Value: true
-        glass_link:
-          Value: false
         l_ef:
           Value: false
         left_arm/bartender_control/EE:
@@ -866,6 +833,8 @@ Visualization Manager:
           Value: false
         left_arm_base_link:
           Value: false
+        left_grasp:
+          Value: true
         left_hand_clamp:
           Value: false
         left_hand_index_distal_link:
@@ -944,10 +913,6 @@ Visualization Manager:
           Value: false
         left_hand_thumb_proximal_link:
           Value: false
-        lemon:
-          Value: true
-        lemon_link:
-          Value: false
         r_ef:
           Value: false
         right_arm/bartender_control/EE:
@@ -1010,6 +975,8 @@ Visualization Manager:
           Value: false
         right_arm_base_link:
           Value: false
+        right_grasp:
+          Value: true
         right_hand_clamp:
           Value: false
         right_hand_index_distal_link:
@@ -1088,10 +1055,6 @@ Visualization Manager:
           Value: false
         right_hand_thumb_proximal_link:
           Value: false
-        rum:
-          Value: true
-        rum_link:
-          Value: false
         table_leg_0_link:
           Value: false
         table_leg_1_link:
@@ -1103,10 +1066,6 @@ Visualization Manager:
         table_plate_link:
           Value: false
         torso_link:
-          Value: false
-        vodka:
-          Value: true
-        vodka_link:
           Value: false
         workbench_leg_0_link:
           Value: false
@@ -1120,22 +1079,14 @@ Visualization Manager:
           Value: false
         world:
           Value: false
-        world_link:
-          Value: false
       Marker Scale: 1
       Name: TF
-      Show Arrows: true
+      Show Arrows: false
       Show Axes: true
       Show Names: true
       Tree:
         world:
           bartender_anchor:
-            coca_link:
-              coca:
-                {}
-            glass_link:
-              glass:
-                {}
             left_arm_base_link:
               left_arm_1_link:
                 left_arm_2_link:
@@ -1235,9 +1186,8 @@ Visualization Manager:
                 {}
               left_arm_1_link_dummy_damping:
                 {}
-            lemon_link:
-              lemon:
-                {}
+            left_grasp:
+              {}
             right_arm_base_link:
               right_arm_1_link:
                 right_arm_2_link:
@@ -1337,9 +1287,8 @@ Visualization Manager:
                 {}
               right_arm_1_link_dummy_damping:
                 {}
-            rum_link:
-              rum:
-                {}
+            right_grasp:
+              {}
             table_plate_link:
               table_leg_0_link:
                 {}
@@ -1351,9 +1300,6 @@ Visualization Manager:
                 {}
             torso_link:
               {}
-            vodka_link:
-              vodka:
-                {}
             workbench_plate_link:
               workbench_leg_0_link:
                 {}
@@ -1363,8 +1309,6 @@ Visualization Manager:
                 {}
               workbench_leg_3_link:
                 {}
-          world_link:
-            {}
       Update Interval: 0
       Value: true
   Enabled: true
@@ -1403,10 +1347,10 @@ Visualization Manager:
         Z: 0.200867
       Name: Current View
       Near Clip Distance: 0.01
-      Pitch: 0.650398
+      Pitch: 0.445398
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 3.13858
+      Yaw: 3.17858
     Saved: ~
 Window Geometry:
   Displays:

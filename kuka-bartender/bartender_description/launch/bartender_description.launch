@@ -176,13 +176,8 @@
     </group>
 
     <!-- TF for grasping -->
-    
-<node name="vodka_rotation_tf" pkg="tf" type="static_transform_publisher" args="0 0 0 1.57 -3.14 -1.57 vodka_link vodka 100"/>
-<node name="rum_rotation_tf" pkg="tf" type="static_transform_publisher" args="0 0 0 1.57 -3.14 -1.57 rum_link rum 100"/>
-<node name="lemon_rotation_tf" pkg="tf" type="static_transform_publisher" args="0 0 0 1.57 -3.14 -1.57 lemon_link lemon 100"/>
-<node name="coca_rotation_tf" pkg="tf" type="static_transform_publisher" args="0 0 0 1.57 -3.14 -1.57 coca_link coca 100"/>
-<node name="glass_rotation_tf" pkg="tf" type="static_transform_publisher" args="0 0 0 1.57 -3.14 -1.57 glass_link glass 100"/>
-<node name="world_rotation_tf" pkg="tf" type="static_transform_publisher" args="0 0 0 -1.57 0 1.57 world world_link 100"/>
-<node name="glass_puring_tf" pkg="tf" type="static_transform_publisher" args="0 0.2 0 0 0 0 glass glass_puring 100"/>
 
+
+<node name="right_grasping" pkg="tf" type="static_transform_publisher" args="-1.2 0.5 0.3 1.57 -3.14 -1.57 bartender_anchor right_grasp 100"/>
+<node name="left_grasping" pkg="tf" type="static_transform_publisher" args="-1.2 -0.5 0.3 1.57 -3.14 -1.57 bartender_anchor left_grasp 100"/>
 </launch>

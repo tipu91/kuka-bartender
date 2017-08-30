@@ -90,7 +90,7 @@ void BartenderManager::checkCallback_left_initial(const geometry_msgs::Pose::Con
 void BartenderManager::Init ()
 {
 	
-	try{
+	/*try{
 	  listener.waitForTransform( "bartender_anchor", "vodka",ros::Time::now(), ros::Duration(3));
 	  listener.lookupTransform( "bartender_anchor", "vodka", ros::Time(0), world_T_vodka);
 	  
@@ -146,34 +146,46 @@ void BartenderManager::Init ()
 	catch (tf::TransformException ex){
 	  ROS_ERROR("%s",ex.what());
 	  ros::Duration(1.0).sleep();
-	}
+	}*/
 	
 	try{
 	  
-	  listener.waitForTransform( "bartender_anchor", "glass", ros::Time::now(), ros::Duration(3));
-	  listener.lookupTransform( "bartender_anchor", "glass", ros::Time(0), world_T_glass);
+	  listener.waitForTransform( "bartender_anchor", "right_grasp", ros::Time::now(), ros::Duration(3));
+	  listener.lookupTransform( "bartender_anchor", "right_grasp", ros::Time(0), world_T_rightGrasp);
 	  
-	  glass.position.x = world_T_glass.getOrigin().getX(); 
-	  glass.position.y = world_T_glass.getOrigin().getY(); 
-	  glass.position.z = world_T_glass.getOrigin().getZ();
-	  tf::quaternionTFToMsg(world_T_glass.getRotation(), glass.orientation);
+	  right_grasp.position.x = world_T_rightGrasp.getOrigin().getX(); 
+	  right_grasp.position.y = world_T_rightGrasp.getOrigin().getY(); 
+	  right_grasp.position.z = world_T_rightGrasp.getOrigin().getZ();
+	  tf::quaternionTFToMsg(world_T_rightGrasp.getRotation(), right_grasp.orientation);
 	}
 	catch (tf::TransformException ex){
 	  ROS_ERROR("%s",ex.what());
 	  ros::Duration(1.0).sleep();
 	}
 	
-	bottle["vodka"] = vodka;
+	try{
+	  
+	  listener.waitForTransform( "bartender_anchor", "left_grasp", ros::Time::now(), ros::Duration(3));
+	  listener.lookupTransform( "bartender_anchor", "left_grasp", ros::Time(0), world_T_leftGrasp);
+	  
+	  left_grasp.position.x = world_T_leftGrasp.getOrigin().getX(); 
+	  left_grasp.position.y = world_T_leftGrasp.getOrigin().getY(); 
+	  left_grasp.position.z = world_T_leftGrasp.getOrigin().getZ();
+	  tf::quaternionTFToMsg(world_T_leftGrasp.getRotation(), left_grasp.orientation);
+	}
+	catch (tf::TransformException ex){
+	  ROS_ERROR("%s",ex.what());
+	  ros::Duration(1.0).sleep();
+	}
+	
+	/*bottle["vodka"] = vodka;
 	bottle["lemon"] = lemon;
 	bottle["rum"] = rum;
 	bottle["coca"] = coca;
-	bottle["glass"] = glass;
-
-	ROS_INFO("vodka: x = %f | y = %f | z = %f", vodka.position.x, vodka.position.y, vodka.position.z);
-	ROS_INFO("rum: x = %f | y = %f | z = %f", rum.position.x, rum.position.y, rum.position.z);
-	ROS_INFO("coca: x = %f | y = %f | z = %f", coca.position.x, coca.position.y, coca.position.z);
-	ROS_INFO("lemon: x = %f | y = %f | z = %f", lemon.position.x, lemon.position.y, lemon.position.z);
-	ROS_INFO("glass: x = %f | y = %f | z = %f", glass.position.x, glass.position.y, glass.position.z);
+	bottle["glass"] = glass;*/
+	
+	bottle["right_grasp"] = right_grasp;
+	bottle["left_grasp"] = left_grasp;
 
 }
 

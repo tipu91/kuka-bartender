@@ -37,33 +37,7 @@
                     plate_thickness="0.1">
   <origin xyz="-1.25 0.55 0.07" rpy="0 0 0"/>
   </xacro:model_table>
-  
-  <!-- BOTTLES -->  
-  <xacro:model_bottle name="vodka" parent="bartender_anchor">
-    <origin xyz="-1 0.15 0.22" rpy="0 0 0"/>
-    <material name="Vito/LightGrey"/>
-  </xacro:model_bottle>
-  
-  <xacro:model_bottle name="lemon" parent="bartender_anchor">
-    <origin xyz="-1 -0.15 0.22" rpy="0 0 0"/>
-    <material name="Vito/Orange"/>
-  </xacro:model_bottle>
-
-  <xacro:model_bottle name="rum" parent="bartender_anchor">      
-    <origin xyz="-1 0.3 0.22" rpy="0 0 0"/>
-    <material name="Vito/Green"/>
-  </xacro:model_bottle>
-
-  <xacro:model_bottle name="coca" parent="bartender_anchor">      
-    <origin xyz="-1 -0.3 0.22" rpy="0 0 0"/>
-    <material name="Vito/Yellow"/>
-  </xacro:model_bottle>
-  
-  <!-- GLASS -->
-  <xacro:model_glass name="glass" parent="bartender_anchor">			
-    <origin xyz="-0.9 0 0.15" rpy="0 0 0"/>
-  </xacro:model_glass>
-  
+   
   <!-- TORSO -->
   <xacro:model_torso name="torso" parent="bartender_anchor">
     <origin xyz="0 0 0"/>

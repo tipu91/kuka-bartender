@@ -33,36 +33,38 @@ int main(int argc, char **argv)
 	manager.pub_bartender_config_right.publish(manager.msg_config);
 	manager.pub_bartender_config_left.publish(manager.msg_config);
 
+	bool init_select = true;
 	bool select = true;	
-	bool arrived = false;
+	
+	bool arrived;
 	int action;
 	
 	while(ros::ok())
 	//while(ros::ok() && manager.run_manager)
 	{
 		
-		// ros::spinOnce();
-		
-		if(select) {
+		if(init_select) {
 		  action = 1;
-		  select = false;
-		  manager.ToPose("right_arm", "vodka", manager.pub_bartender_cmd_right,true);
-		  manager.ToPose("left_arm", "lemon", manager.pub_bartender_cmd_left,false);
+		  init_select = false;
 		}
 		
 		switch(action){
 		  
-		  // Right arm go to grasping pose
+		  // Right arm go to grasping pose (for bottle)
 		  case 1:
+		    
+		    if(select) {
+		      select = false;
+		      arrived = false;
+		      manager.ToPose("right_arm", "right_grasp", manager.pub_bartender_cmd_right,true);
+		    }
 		    
 		    ROS_INFO("Action 1");
 		        
-		    if( manager.compare_error(manager.error_right) && !arrived)
+		    if( manager.compare_error(manager.error_right) )
 		    {
 			ROS_INFO("ready for grasp");
-			arrived = true;
-			//select = true;
-			manager.ToPose("right_arm", "vodka", manager.pub_bartender_cmd_right,false);
+			manager.ToPose("right_arm", "right_grasp", manager.pub_bartender_cmd_right,false);
 			
 			//grasp selection
 			std::string ans;
@@ -73,6 +75,7 @@ int main(int argc, char **argv)
 			    
 			    if(ans.compare("y") == 0) {
 			      action = 2;
+			      select = true;
 			      manager.Grasping(closure_value,s_r);
 			    }
 			    else sleep(2);
@@ -85,9 +88,41 @@ int main(int argc, char **argv)
 		  
 		    break;
 		    
+		  // Left arm go to grasping pose (for glass)  
 		  case 2:
 		    
+		    if(select) {
+		      select = false;
+		      arrived = false;
+		      manager.ToPose("left_arm", "left_grasp", manager.pub_bartender_cmd_left,true);
+		    }
+		    
 		    ROS_INFO("Action 2");
+		        
+		    if( manager.compare_error(manager.error_right) )
+		    {
+			ROS_INFO("ready for grasp");
+			manager.ToPose("left_arm", "left_grasp", manager.pub_bartender_cmd_left,false);
+			
+			//grasp selection
+			std::string ans;
+
+			while(action==2){
+			    std::cout << "Are You ready for grasping? (y/n) " << std::endl;
+			    getline (std::cin, ans);
+			    
+			    if(ans.compare("y") == 0) {
+			      action = 3;
+			      select = true;
+			      manager.Grasping(closure_value,s_l);
+			    }
+			    else sleep(2);
+			}
+		    
+		      
+		     }
+		    
+		    ros::spinOnce();
 		    
 		    break;
 		    
