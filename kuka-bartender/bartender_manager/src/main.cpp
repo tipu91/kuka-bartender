@@ -33,10 +33,8 @@ int main(int argc, char **argv)
 	manager.pub_bartender_config_right.publish(manager.msg_config);
 	manager.pub_bartender_config_left.publish(manager.msg_config);
 
-	bool select = true;
-	
+	bool select = true;	
 	bool arrived = false;
-	
 	int action;
 	
 	while(ros::ok())
@@ -73,7 +71,7 @@ int main(int argc, char **argv)
 			    std::cout << "Are You ready for grasping? (y/n) " << std::endl;
 			    getline (std::cin, ans);
 			    
-			    if(ans.compare("y")) {
+			    if(ans.compare("y") == 0) {
 			      action = 2;
 			      manager.Grasping(closure_value,s_r);
 			    }

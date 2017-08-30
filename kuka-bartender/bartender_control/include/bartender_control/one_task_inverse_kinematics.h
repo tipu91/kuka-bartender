@@ -10,7 +10,6 @@
 #include <sensor_msgs/JointState.h>
 
 #include <bartender_control/bartender_msg.h> 
-#include <bartender_control/cfg_msg.h> 
 
 #include <kdl/chainfksolverpos_recursive.hpp>
 #include <kdl/chainiksolvervel_pinv.hpp>
@@ -57,10 +56,14 @@ namespace bartender_control
 		void FrameToPose(KDL::Frame &frame, geometry_msgs::PoseStamped &pose);
 		void update(const ros::Time& time, const ros::Duration& period);
 		void command(const bartender_control::bartender_msg::ConstPtr &msg);
-		void configCallback(const bartender_control::cfg_msg::ConstPtr &msg);
 		void param_update();
+		//bool TFCallback(const tf2_msgs::TFMessage::ConstPtr &msg);
 		void Error(geometry_msgs::PoseStamped& p_curr, geometry_msgs::PoseStamped& p_des, std::vector<double> &error);
+		void quaternionProduct(quaternion_ q1, quaternion_ q2, quaternion_ &q);
 		Eigen::Matrix<double, 7, 1> potentialEnergy(KDL::JntArray q);
+		static void toEulerianAngle(geometry_msgs::PoseStamped& q, double& roll, double& pitch, double& yaw);
+		
+		double roll, pitch, yaw;
 		
 		// config file
 		/*dynamic_reconfigure::Server<bartender_control::OneTaskInverseKinematics::controlConfig> server;
@@ -73,7 +76,7 @@ namespace bartender_control
 		}
 
 		ros::Subscriber sub_bartender_cmd;
-		ros::Subscriber sub_bartender_config;
+		
 		ros::Subscriber sub_bartender_goal, sub_bartender_tf;
 		
 		ros::Publisher pub_check_error;
@@ -120,8 +123,6 @@ namespace bartender_control
 	tf::TransformListener listener;
 	
 	std::string goal_ref;
-	
-	std::string arm_EE;
 
 		double Roll_x_init, Pitch_x_init, Yaw_x_init;
 

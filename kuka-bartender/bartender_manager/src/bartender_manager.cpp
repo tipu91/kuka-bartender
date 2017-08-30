@@ -177,28 +177,6 @@ void BartenderManager::Init ()
 
 }
 
-//Function who transforms Euler agles (RPY) in quaternion
-double *BartenderManager::EulerToQuaternion(float R, float P, float Y)
-{
-	
-	static double q_[4];
-
-	double t0 = std::cos(Y*0.5f);
-	double t1 = std::sin(Y*0.5f);
-	double t2 = std::cos(R*0.5f);
-	double t3 = std::sin(R*0.5f);
-	double t4 = std::cos(P*0.5f);
-	double t5 = std::sin(P*0.5f);
-
-	q_[0] = t0 * t2 * t4 + t1 * t3 * t5;
-	q_[1] = t0 * t3 * t4 - t1 * t2 * t5;
-	q_[2] = t0 * t2 * t5 + t1 * t3 * t4;
-	q_[3] = t1 * t2 * t4 - t0 * t3 * t5;
-
-	return q_;
-
-}
-
 void BartenderManager::ToPose(std::string arm, std::string target, ros::Publisher pub, bool run)
 {
   
