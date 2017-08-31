@@ -53,12 +53,6 @@ namespace bartender_control
 
         // computing forward kinematics
         fk_pos_solver_->JntToCart(joint_msr_states_.q, x_);
-        // initialization x_des_
-        x_des_.p = KDL::Vector(-1, 0, 1);
-        x_des_.M = KDL::Rotation::Quaternion(0, 0 , 0, -1);
-
-
-        cmd_flag_ = 0;
 
         //Definition of publishers and subscribes
 
@@ -73,10 +67,12 @@ namespace bartender_control
 
 	x_error.resize(6);
 	
-	//***************************************************************//
+	//*********************************Initialization default values*********************************//
 	alpha1 = 8;
 	alpha2 = 0.4;
 	second_task = true;
+
+        cmd_flag_ = 0;
 	
         return true;
     }
@@ -212,26 +208,24 @@ namespace bartender_control
             //*******************************************************************************************************************
 
             // integrating q_dot -> getting q (Euler method)
-            for (int i = 0; i < joint_handles_.size(); i++)
+            // FIXME joint limits problems: with limits, robot doesn't work well
+            //cout<<ns_param<<endl;
+            for (int i = 0; i < joint_handles_.size(); i++){
                 joint_des_states_.q(i) += period.toSec()*joint_des_states_.qdot(i);
-
-	    // FIXME joint limits problems: with limits, robot doesn't work well
-	    
-            // joint limits saturation
-            /*for (int i =0;  i < joint_handles_.size(); i++)
-            {
-                if (joint_des_states_.q(i) < joint_limits_.min(i))
+		/*cout<<"joint "<<i+1<<":"<<joint_des_states_.q(i)<<endl;
+		if (joint_des_states_.q(i) < joint_limits_.min(i))
                     joint_des_states_.q(i) = joint_limits_.min(i);
                 if (joint_des_states_.q(i) > joint_limits_.max(i))
                     joint_des_states_.q(i) = joint_limits_.max(i);
-            }*/
+		cout<<"SAT joint "<<i+1<<":"<<joint_des_states_.q(i)<<endl;*/
+	    }
 	    
 	    geometry_msgs::PoseStamped msg_pose;
 	    msg_pose = x_pose;
 	    pub_pose.publish(msg_pose);
             
         }
-        else
+        else	// If control is not running
         {
             cmd_flag_ = 0;
 

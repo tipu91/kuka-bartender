@@ -53,6 +53,7 @@ class BartenderManager {
 		void OpeningHand(std::vector<int> opening_value, std::string s);
 		void ToPose(std::string arm, std::string target, ros::Publisher pub, bool stop);
 		bool compare_error(double err[6], double thr_lin, double thr_rot);
+		void resetError(double *err);
 		
 		// config file
 		dynamic_reconfigure::Server<bartender_manager::managerConfig> server;

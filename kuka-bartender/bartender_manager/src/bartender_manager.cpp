@@ -28,8 +28,8 @@ BartenderManager::BartenderManager()
 
     n_.param<int>("printscreen", print, 0);
     
-    /*for(int i=0; i<6; i++) error_right[i] = 1;
-    for(int i=0; i<6; i++) error_left[i] = 1;*/
+    for(int i=0; i<6; i++) error_right[i] = 0.1;
+    for(int i=0; i<6; i++) error_left[i] = 0.1;
 }
 
 BartenderManager::~BartenderManager() {}
@@ -48,6 +48,13 @@ void BartenderManager::config_callback(bartender_manager::managerConfig& config,
     /*pub_bartender_config_right.publish(msg_config);
     pub_bartender_config_left.publish(msg_config);*/
     
+}
+
+void BartenderManager::resetError(double *err)
+{
+    for(int i=0; i<6; i++) err[i] = 0.1;
+    
+    return;
 }
 
 void BartenderManager::checkCallbackPoseright(const geometry_msgs::PoseStamped::ConstPtr & msg_pose) {

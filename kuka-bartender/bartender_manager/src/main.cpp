@@ -32,6 +32,8 @@ int main(int argc, char **argv)
 	    
 	manager.pub_bartender_config_right.publish(manager.msg_config);
 	manager.pub_bartender_config_left.publish(manager.msg_config);
+	
+	sleep(2);
 
 	bool init_select = true;
 	bool select = true;	
@@ -91,6 +93,8 @@ int main(int argc, char **argv)
 		    
 		    if(select) {
 		      select = false;
+		      manager.resetError(manager.error_right);
+		      manager.resetError(manager.error_left);
 		      manager.ToPose("left_arm", "left_grasp", manager.pub_bartender_cmd_left,true);
 		      ROS_INFO("Action 2");
 		    }
@@ -127,6 +131,8 @@ int main(int argc, char **argv)
 		    
 		    if(select) {
 		      select = false;
+		      manager.resetError(manager.error_right);
+		      manager.resetError(manager.error_left);
 		      manager.ToPose("left_arm", "left_pour", manager.pub_bartender_cmd_left,true);
 		      manager.ToPose("right_arm", "right_pour", manager.pub_bartender_cmd_right,true);
 		      ROS_INFO("Action 3");
@@ -165,7 +171,50 @@ int main(int argc, char **argv)
 		    
 		    if(select) {
 		      select = false;
+		      manager.resetError(manager.error_right);
+		      manager.resetError(manager.error_left);
 		      manager.ToPose("right_arm", "pouring", manager.pub_bartender_cmd_right,true);
+		      ROS_INFO("Action 4");
+		    }
+		    
+		        
+		    if( manager.compare_error(manager.error_right, 0.05, 0.5) )
+		    {
+			ROS_INFO("ready for shaking");
+			
+			manager.ToPose("right_arm", "pouring", manager.pub_bartender_cmd_right,false);
+			
+			std::string ans;
+			
+			ros::Time Init_time = ros::Time::now();
+			ros::Duration duration;
+
+			while(action==4){
+			    
+			  duration = ros::Time::now() - Init_time;
+			  std::cout << duration.toSec() << std::endl;
+			  
+			  if(duration.toSec() > 5) {
+			    action = 5;
+			    select = true;
+			  }
+			  
+			}
+		        
+		     }
+		    
+		    ros::spinOnce();
+		    
+		    break;
+		    
+		  // Stop Pouring action 
+		  case 5:
+		    
+		    if(select) {
+		      select = false;
+		      manager.resetError(manager.error_right);
+		      manager.resetError(manager.error_left);
+		      manager.ToPose("right_arm", "right_pour", manager.pub_bartender_cmd_right,true);
 		      ROS_INFO("Action 4");
 		    }
 		    
@@ -174,29 +223,26 @@ int main(int argc, char **argv)
 		    {
 			ROS_INFO("ready for shaking");
 			
-			manager.ToPose("right_arm", "pouring", manager.pub_bartender_cmd_right,false);
+			manager.ToPose("right_arm", "right_pour", manager.pub_bartender_cmd_right,false);
 			
-			//grasp selection
 			std::string ans;
-
-			while(action==4){
+			
+			while(action==5){
 			    std::cout << "Are You ready for shaking? (y/n) " << std::endl;
 			    getline (std::cin, ans);
 			    
 			    if(ans.compare("y") == 0) {
-			      action = 5;
+			      action = 6;
 			      select = true;
 			    }
 			    else sleep(2);
 			}
-		    
-		      
+		        
 		     }
 		    
 		    ros::spinOnce();
 		    
 		    break;
-		    
 		}
 		    
 		    
