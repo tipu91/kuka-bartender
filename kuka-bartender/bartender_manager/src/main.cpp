@@ -326,7 +326,7 @@ int main(int argc, char **argv)
 		    }
 		    
 		        
-		    if( manager.compare_error(manager.error_right, 0.05, 0.05) )
+		    if( manager.compare_error(manager.error_left, 0.05, 0.1) )
 		    {
 			ROS_INFO("stop serving");
 			
