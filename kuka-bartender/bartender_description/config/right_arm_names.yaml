@@ -6,3 +6,4 @@ joints:
   - right_arm_4_joint
   - right_arm_5_joint
   - right_arm_6_joint
+  - r_ef_joint

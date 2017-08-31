@@ -12,6 +12,7 @@ left_arm:
   - left_arm_a4_joint
   - left_arm_a5_joint
   - left_arm_a6_joint
+  - l_ef_joint
 
 # make the namespace match the name you use to instantiate the arm in the xacro
 right_arm:
@@ -27,3 +28,4 @@ right_arm:
   - right_arm_a4_joint
   - right_arm_a5_joint
   - right_arm_a6_joint
+  - r_ef_joint

@@ -175,16 +175,48 @@ void BartenderManager::Init ()
 	  ros::Duration(1.0).sleep();
 	}
 	
+	try{
+	  
+	  listener.waitForTransform( "bartender_anchor", "shaking", ros::Time::now(), ros::Duration(3));
+	  listener.lookupTransform( "bartender_anchor", "shaking", ros::Time(0), world_T_shaking);
+	  
+	  shaking.position.x = world_T_shaking.getOrigin().getX(); 
+	  shaking.position.y = world_T_shaking.getOrigin().getY(); 
+	  shaking.position.z = world_T_shaking.getOrigin().getZ();
+	  tf::quaternionTFToMsg(world_T_shaking.getRotation(), shaking.orientation);
+	}
+	catch (tf::TransformException ex){
+	  ROS_ERROR("%s",ex.what());
+	  ros::Duration(1.0).sleep();
+	}
+	
+	try{
+	  
+	  listener.waitForTransform( "bartender_anchor", "serving", ros::Time::now(), ros::Duration(3));
+	  listener.lookupTransform( "bartender_anchor", "serving", ros::Time(0), world_T_serving);
+	  
+	  serving.position.x = world_T_serving.getOrigin().getX(); 
+	  serving.position.y = world_T_serving.getOrigin().getY(); 
+	  serving.position.z = world_T_serving.getOrigin().getZ();
+	  tf::quaternionTFToMsg(world_T_serving.getRotation(), serving.orientation);
+	}
+	catch (tf::TransformException ex){
+	  ROS_ERROR("%s",ex.what());
+	  ros::Duration(1.0).sleep();
+	}
+	
 	
 	pose["right_grasp"] = right_grasp;
 	pose["left_grasp"] = left_grasp;
 	pose["right_pour"] = right_pour;
 	pose["left_pour"] = left_pour;
 	pose["pouring"] = pouring;
+	pose["shaking"] = shaking;
+	pose["serving"] = serving;
 
 }
 
-void BartenderManager::ToPose(std::string arm, std::string target, ros::Publisher pub, bool run)
+void BartenderManager::ToPose(std::string arm, std::string target, ros::Publisher pub, bool run, bool print)
 {
   
 	bartender_control::bartender_msg msg; 
@@ -196,7 +228,7 @@ void BartenderManager::ToPose(std::string arm, std::string target, ros::Publishe
     
 	pub.publish(msg);
 	
-	if(run) {
+	if(run && print) {
 	  cout<<arm<<endl;
 	  ROS_INFO("DES_POSE x=%f | y=%f | z=%f", msg.des_frame.position.x, msg.des_frame.position.y, msg.des_frame.position.z);
 	}

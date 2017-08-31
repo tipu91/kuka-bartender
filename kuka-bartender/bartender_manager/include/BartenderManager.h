@@ -51,7 +51,7 @@ class BartenderManager {
 		void Init();
 		void Grasping(std::vector<int> closure_value, std::string s);
 		void OpeningHand(std::vector<int> opening_value, std::string s);
-		void ToPose(std::string arm, std::string target, ros::Publisher pub, bool stop);
+		void ToPose(std::string arm, std::string target, ros::Publisher pub, bool stop, bool print);
 		bool compare_error(double err[6], double thr_lin, double thr_rot);
 		void resetError(double *err);
 		
@@ -100,6 +100,8 @@ class BartenderManager {
 		tf::StampedTransform world_T_leftGrasp;
 
 		tf::StampedTransform world_T_pouring;
+		tf::StampedTransform world_T_shaking;
+		tf::StampedTransform world_T_serving;
 		
 		tf::TransformListener listener;
 
@@ -139,7 +141,8 @@ class BartenderManager {
 		geometry_msgs::Pose right_grasp;
 		geometry_msgs::Pose left_grasp;
 		geometry_msgs::Pose pouring;
-		
+		geometry_msgs::Pose shaking;
+		geometry_msgs::Pose serving;
 
 		geometry_msgs::Pose pose_rot_;
 

@@ -6,3 +6,4 @@ joints:
   - left_arm_4_joint
   - left_arm_5_joint
   - left_arm_6_joint
+  - l_ef_joint
