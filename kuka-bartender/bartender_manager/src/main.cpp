@@ -180,7 +180,7 @@ int main(int argc, char **argv)
 		        
 		    if( manager.compare_error(manager.error_right, 0.05, 0.5) )
 		    {
-			ROS_INFO("ready for shaking");
+			ROS_INFO("Pouring");
 			
 			manager.ToPose("right_arm", "pouring", manager.pub_bartender_cmd_right,false);
 			
@@ -215,7 +215,7 @@ int main(int argc, char **argv)
 		      manager.resetError(manager.error_right);
 		      manager.resetError(manager.error_left);
 		      manager.ToPose("right_arm", "right_pour", manager.pub_bartender_cmd_right,true);
-		      ROS_INFO("Action 4");
+		      ROS_INFO("Action 5");
 		    }
 		    
 		        
