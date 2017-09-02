@@ -51,7 +51,7 @@ class BartenderManager {
 		void Init();
 		void Grasping(std::vector<int> closure_value, std::string s);
 		void OpeningHand(std::vector<int> opening_value, std::string s);
-		void ToPose(std::string arm, std::string target, ros::Publisher pub, bool stop, bool print);
+		void ToPose(std::string arm, std::string target, int action, ros::Publisher pub, bool stop, bool print);
 		bool compare_error(double err[6], double thr_lin, double thr_rot);
 		void resetError(double *err);
 		

@@ -59,14 +59,14 @@ int main(int argc, char **argv)
 		    
 		    if(select) {
 		      select = false;
-		      manager.ToPose("right_arm", "right_grasp", manager.pub_bartender_cmd_right,true, false);
+		      manager.ToPose("right_arm", "right_grasp", action, manager.pub_bartender_cmd_right,true, false);
 		      ROS_INFO("Action 1");
 		    }
 
 		    if( manager.compare_error(manager.error_right, 0.05, 0.05) )
 		    {
 			ROS_INFO("ready for grasp");
-			manager.ToPose("right_arm", "right_grasp", manager.pub_bartender_cmd_right,false, false);
+			manager.ToPose("right_arm", "right_grasp", action, manager.pub_bartender_cmd_right,false, false);
 			
 
 			//std::string ans;
@@ -97,14 +97,14 @@ int main(int argc, char **argv)
 		      select = false;
 		      manager.resetError(manager.error_right);
 		      manager.resetError(manager.error_left);
-		      manager.ToPose("left_arm", "left_grasp", manager.pub_bartender_cmd_left,true, false);
+		      manager.ToPose("left_arm", "left_grasp", action, manager.pub_bartender_cmd_left,true, false);
 		      ROS_INFO("Action 2");
 		    }
 		    
 		    if( manager.compare_error(manager.error_left, 0.05, 0.05) )
 		    {
 			ROS_INFO("ready for grasp");
-			manager.ToPose("left_arm", "left_grasp", manager.pub_bartender_cmd_left,false, false);
+			manager.ToPose("left_arm", "left_grasp", action, manager.pub_bartender_cmd_left,false, false);
 			
 			//std::string ans;
 
@@ -134,8 +134,8 @@ int main(int argc, char **argv)
 		      select = false;
 		      manager.resetError(manager.error_right);
 		      manager.resetError(manager.error_left);
-		      manager.ToPose("left_arm", "left_pour", manager.pub_bartender_cmd_left,true, false);
-		      manager.ToPose("right_arm", "right_pour", manager.pub_bartender_cmd_right,true, false);
+		      manager.ToPose("left_arm", "left_pour", action, manager.pub_bartender_cmd_left,true, false);
+		      manager.ToPose("right_arm", "right_pour", action, manager.pub_bartender_cmd_right,true, false);
 		      ROS_INFO("Action 3");
 		    }
 		        
@@ -143,8 +143,8 @@ int main(int argc, char **argv)
 		    {
 			ROS_INFO("ready for pouring");
 			
-			manager.ToPose("left_arm", "left_pour", manager.pub_bartender_cmd_left,false, false);
-			manager.ToPose("right_arm", "right_pour", manager.pub_bartender_cmd_right,false, false);
+			manager.ToPose("left_arm", "left_pour", action, manager.pub_bartender_cmd_left,false, false);
+			manager.ToPose("right_arm", "right_pour", action, manager.pub_bartender_cmd_right,false, false);
 			
 			//std::string ans;
 
@@ -173,7 +173,7 @@ int main(int argc, char **argv)
 		      select = false;
 		      manager.resetError(manager.error_right);
 		      manager.resetError(manager.error_left);
-		      manager.ToPose("right_arm", "pouring", manager.pub_bartender_cmd_right,true, false);
+		      manager.ToPose("right_arm", "pouring", action, manager.pub_bartender_cmd_right,true, false);
 		      ROS_INFO("Action 4");
 		    }
 		    
@@ -182,7 +182,7 @@ int main(int argc, char **argv)
 		    {
 			ROS_INFO("Pouring");
 			
-			manager.ToPose("right_arm", "pouring", manager.pub_bartender_cmd_right,false, false);
+			manager.ToPose("right_arm", "pouring", action, manager.pub_bartender_cmd_right,false, false);
 			
 			//std::string ans;
 			
@@ -214,7 +214,7 @@ int main(int argc, char **argv)
 		      select = false;
 		      manager.resetError(manager.error_right);
 		      manager.resetError(manager.error_left);
-		      manager.ToPose("right_arm", "right_pour", manager.pub_bartender_cmd_right,true, false);
+		      manager.ToPose("right_arm", "right_pour", action, manager.pub_bartender_cmd_right,true, false);
 		      ROS_INFO("Action 5");
 		    }
 		    
@@ -223,7 +223,7 @@ int main(int argc, char **argv)
 		    {
 			ROS_INFO("ready for shaking");
 			
-			manager.ToPose("right_arm", "right_pour", manager.pub_bartender_cmd_right,false, false);
+			manager.ToPose("right_arm", "right_pour", action, manager.pub_bartender_cmd_right,false, false);
 			
 			//std::string ans;
 			
@@ -251,12 +251,12 @@ int main(int argc, char **argv)
 		    
 		    for(int i=1; i<=10; i++)
 		    {
-		      if(i%2 == 0) manager.ToPose("left_arm", "left_pour", manager.pub_bartender_cmd_left,true, false);
-		      else manager.ToPose("left_arm", "shaking", manager.pub_bartender_cmd_left,true, false);		      
+		      if(i%2 == 0) manager.ToPose("left_arm", "left_pour", action, manager.pub_bartender_cmd_left,true, false);
+		      else manager.ToPose("left_arm", "shaking", action, manager.pub_bartender_cmd_left,true, false);		      
 		      sleep(1);
 		    }
 		    
-		    manager.ToPose("left_arm", "left_pour", manager.pub_bartender_cmd_left,false, false);
+		    manager.ToPose("left_arm", "left_pour", action, manager.pub_bartender_cmd_left,false, false);
 		    
 		    //std::string ans;
 		    
@@ -282,22 +282,21 @@ int main(int argc, char **argv)
 		      select = false;
 		      manager.resetError(manager.error_right);
 		      manager.resetError(manager.error_left);
-		      manager.ToPose("left_arm", "serving", manager.pub_bartender_cmd_left,true, false);
+		      manager.ToPose("left_arm", "serving", action, manager.pub_bartender_cmd_left,true, false);
 		      ROS_INFO("Action 7");
 		    }
 		    
 		        
-		    if( manager.compare_error(manager.error_left, 0.05, 0.5) )
+		    if( manager.compare_error(manager.error_left, 0.1, 0.1) )
 		    {
 			ROS_INFO("Serving");
 			
-			manager.ToPose("left_arm", "serving", manager.pub_bartender_cmd_left,false, false);
+			manager.ToPose("left_arm", "serving", action, manager.pub_bartender_cmd_left,false, false);
 			
 			ros::Time Init_time = ros::Time::now();
 			ros::Duration duration;
 
 			while(action==7){
-			    
 			  duration = ros::Time::now() - Init_time;
 			  std::cout << duration.toSec() << std::endl;
 			  
@@ -321,7 +320,7 @@ int main(int argc, char **argv)
 		      select = false;
 		      manager.resetError(manager.error_right);
 		      manager.resetError(manager.error_left);
-		      manager.ToPose("left_arm", "left_pour", manager.pub_bartender_cmd_left,true, false);
+		      manager.ToPose("left_arm", "left_pour", action, manager.pub_bartender_cmd_left,true, false);
 		      ROS_INFO("Action 8");
 		    }
 		    
@@ -330,7 +329,7 @@ int main(int argc, char **argv)
 		    {
 			ROS_INFO("stop serving");
 			
-			manager.ToPose("left_arm", "left_pour", manager.pub_bartender_cmd_left,false, false);
+			manager.ToPose("left_arm", "left_pour", action, manager.pub_bartender_cmd_left,false, false);
 			
 			select = true;
 			action = 9;

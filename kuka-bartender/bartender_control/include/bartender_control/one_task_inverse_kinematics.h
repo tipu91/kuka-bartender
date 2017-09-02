@@ -120,6 +120,7 @@ namespace bartender_control
 		//KDL::JntArray G_local;
 
 		int cmd_flag_;
+		int action;
 		bool second_task;
 
 		double alpha1, alpha2;

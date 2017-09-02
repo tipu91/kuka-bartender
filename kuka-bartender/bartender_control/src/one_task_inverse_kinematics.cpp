@@ -73,6 +73,7 @@ namespace bartender_control
 	second_task = true;
 
         cmd_flag_ = 0;
+	action = 0;
 	
         return true;
     }
@@ -118,6 +119,8 @@ namespace bartender_control
 	goal_ref = msg->goal_tf;
 	
 	ns_param = msg->arm;	
+	
+	action = msg->action;
 	//**********************************************************************************
 	
 	return;
@@ -153,7 +156,11 @@ namespace bartender_control
     //  Controller function:: Multy Task Inverse Kinematics
     void OneTaskInverseKinematics::update(const ros::Time& time, const ros::Duration& period)
     {
-        if (!second_task) alpha1 = 3;
+
+	if ( action == 3 && ns_param == "right_arm") second_task = false;
+	else second_task = true;
+
+        if (!second_task) alpha1 = 5;
 
         // std::cout << "cmd_flag_ = " << cmd_flag_ << std::endl;
 
@@ -194,7 +201,7 @@ namespace bartender_control
                 P_null =  Eigen::Matrix<double, 7, 7>::Identity() - J_pinv_ * J_.data;
 
                 //  Creation of the second task
-                q_null = alpha2 * P_null * potentialEnergy( joint_msr_states_.q );
+                q_null = P_null * potentialEnergy( joint_msr_states_.q );
 
                 for (int i = 0; i < J_pinv_.rows(); i++)
                 {

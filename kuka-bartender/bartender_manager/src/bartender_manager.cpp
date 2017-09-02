@@ -216,7 +216,7 @@ void BartenderManager::Init ()
 
 }
 
-void BartenderManager::ToPose(std::string arm, std::string target, ros::Publisher pub, bool run, bool print)
+void BartenderManager::ToPose(std::string arm, std::string target, int action,  ros::Publisher pub, bool run, bool print)
 {
   
 	bartender_control::bartender_msg msg; 
@@ -225,8 +225,9 @@ void BartenderManager::ToPose(std::string arm, std::string target, ros::Publishe
 	msg.goal_tf = target;    
 	msg.des_frame = pose[target];
 	msg.run = run;
+	msg.action = action;
     
-	pub.publish(msg);
+	for(int i=0; i<50; i++) pub.publish(msg);
 	
 	if(run && print) {
 	  cout<<arm<<endl;

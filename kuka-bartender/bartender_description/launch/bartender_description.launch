@@ -72,7 +72,7 @@
             <arg name="paused" value="false"/>
             <!-- when using the real/sim scenario in parallel, set "use_enabled_time" to false -->
             <arg name="use_sim_time" value="true"/>
-            <arg name="gui" value="false"/>
+            <arg name="gui" value="true"/>
             <arg name="headless" value="true"/>
             <arg name="debug" value="false"/>
         </include>
