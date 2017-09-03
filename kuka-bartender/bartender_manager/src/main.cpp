@@ -67,9 +67,6 @@ int main(int argc, char **argv)
 		    {
 			ROS_INFO("ready for grasp");
 			manager.ToPose("right_arm", "right_grasp", action, manager.pub_bartender_cmd_right,false, false);
-			
-
-			//std::string ans;
 
 			while(action==1){
 			    std::cout << "Are You ready for grasping? (y/n) " << std::endl;
@@ -105,8 +102,6 @@ int main(int argc, char **argv)
 		    {
 			ROS_INFO("ready for grasp");
 			manager.ToPose("left_arm", "left_grasp", action, manager.pub_bartender_cmd_left,false, false);
-			
-			//std::string ans;
 
 			while(action==2){
 			    std::cout << "Are You ready for grasping? (y/n) " << std::endl;
@@ -145,8 +140,6 @@ int main(int argc, char **argv)
 			
 			manager.ToPose("left_arm", "left_pour", action, manager.pub_bartender_cmd_left,false, false);
 			manager.ToPose("right_arm", "right_pour", action, manager.pub_bartender_cmd_right,false, false);
-			
-			//std::string ans;
 
 			while(action==3){
 			    std::cout << "Are You ready for pouring? (y/n) " << std::endl;
@@ -184,8 +177,6 @@ int main(int argc, char **argv)
 			
 			manager.ToPose("right_arm", "pouring", action, manager.pub_bartender_cmd_right,false, false);
 			
-			//std::string ans;
-			
 			ros::Time Init_time = ros::Time::now();
 			ros::Duration duration;
 
@@ -219,13 +210,11 @@ int main(int argc, char **argv)
 		    }
 		    
 		        
-		    if( manager.compare_error(manager.error_right, 0.05, 0.05) )
+		    if( manager.compare_error(manager.error_right, 0.1, 0.05) )
 		    {
 			ROS_INFO("ready for shaking");
 			
 			manager.ToPose("right_arm", "right_pour", action, manager.pub_bartender_cmd_right,false, false);
-			
-			//std::string ans;
 			
 			while(action==5){
 			    std::cout << "Are You ready for shaking? (y/n) " << std::endl;
@@ -249,7 +238,7 @@ int main(int argc, char **argv)
 		    
 		    ROS_INFO("action 6");
 		    
-		    for(int i=1; i<=10; i++)
+		    for(int i=1; i<=20; i++)
 		    {
 		      if(i%2 == 0) manager.ToPose("left_arm", "left_pour", action, manager.pub_bartender_cmd_left,true, false);
 		      else manager.ToPose("left_arm", "shaking", action, manager.pub_bartender_cmd_left,true, false);		      
@@ -257,8 +246,6 @@ int main(int argc, char **argv)
 		    }
 		    
 		    manager.ToPose("left_arm", "left_pour", action, manager.pub_bartender_cmd_left,false, false);
-		    
-		    //std::string ans;
 		    
 		    while(action==6){
 			    std::cout << "Are You ready for serving? (y/n) " << std::endl;
@@ -325,7 +312,7 @@ int main(int argc, char **argv)
 		    }
 		    
 		        
-		    if( manager.compare_error(manager.error_left, 0.05, 0.1) )
+		    if( manager.compare_error(manager.error_left, 0.1, 0.1) )
 		    {
 			ROS_INFO("stop serving");
 			

@@ -69,7 +69,7 @@ namespace bartender_control
 	
 	//*********************************Initialization default values*********************************//
 	alpha1 = 8;
-	alpha2 = 0.4;
+	alpha2 = 0.16;
 	second_task = true;
 
         cmd_flag_ = 0;
@@ -121,6 +121,8 @@ namespace bartender_control
 	ns_param = msg->arm;	
 	
 	action = msg->action;
+	
+	cout << "received message from " << ns_param << " and ACTION = " << action << endl; 
 	//**********************************************************************************
 	
 	return;
@@ -156,9 +158,13 @@ namespace bartender_control
     //  Controller function:: Multy Task Inverse Kinematics
     void OneTaskInverseKinematics::update(const ros::Time& time, const ros::Duration& period)
     {
-
+	// precision movement 
 	if ( action == 3 && ns_param == "right_arm") second_task = false;
 	else second_task = true;
+	
+	// fast shaking (???)
+	if ( action == 6 && ns_param == "left_arm") alpha1 = 20;
+	else alpha1 = 8;
 
         if (!second_task) alpha1 = 5;
 

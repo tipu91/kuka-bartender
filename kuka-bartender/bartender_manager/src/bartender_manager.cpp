@@ -227,7 +227,8 @@ void BartenderManager::ToPose(std::string arm, std::string target, int action,  
 	msg.run = run;
 	msg.action = action;
     
-	for(int i=0; i<50; i++) pub.publish(msg);
+	// for(int i=0; i<10; i++) pub.publish(msg);
+	pub.publish(msg);
 	
 	if(run && print) {
 	  cout<<arm<<endl;
@@ -235,9 +236,9 @@ void BartenderManager::ToPose(std::string arm, std::string target, int action,  
 	}
 }
 
-void BartenderManager::Grasping(std::vector<int> closure_value, std::string s)
+void BartenderManager::Grasping(std::vector<int> action_value, std::string s)
 {
-	ROS_INFO("Grasping function!!");
+	ROS_INFO("Hand function!!");
 	
 	sensor_msgs::JointState joint_state_r;
 	sensor_msgs::JointState joint_state_l;
@@ -248,46 +249,20 @@ void BartenderManager::Grasping(std::vector<int> closure_value, std::string s)
 	if(s == "left")
 	{
 		joint_state_l.name.push_back("left_hand_synergy_joint");
-		joint_state_l.position.push_back(closure_value[0]);
+		joint_state_l.position.push_back(action_value[0]);
 	}
 
 	if(s == "right")
 	{
 		joint_state_r.name.push_back("right_hand_synergy_joint");
-		joint_state_r.position.push_back(closure_value[1]);
+		joint_state_r.position.push_back(action_value[1]);
 	}
 	
 	joint_pub_r.publish(joint_state_r);
 	joint_pub_l.publish(joint_state_l);
-	// ros::spinOnce();
 
 }
 
-void BartenderManager::OpeningHand(std::vector<int> opening_value, std::string s)
-{
-	ROS_INFO("Opening Hand function!!");
-	sensor_msgs::JointState joint_state_r;
-	sensor_msgs::JointState joint_state_l;
-
-	joint_state_l.header.stamp = ros::Time::now();
-	joint_state_r.header.stamp = joint_state_l.header.stamp;	
-
-	if(s == "left")
-	{
-		joint_state_l.name.push_back("left_hand_synergy_joint");
-		joint_state_l.position.push_back(opening_value[0]);
-	}
-
-	if(s == "right")
-	{
-		joint_state_r.name.push_back("right_hand_synergy_joint");
-		joint_state_r.position.push_back(opening_value[1]);
-	}
-	
- 	joint_pub_r.publish(joint_state_r);
- 	joint_pub_l.publish(joint_state_l);
-
-}
 
 bool BartenderManager::compare_error(double err[6], double thr_lin, double thr_rot)
 {
