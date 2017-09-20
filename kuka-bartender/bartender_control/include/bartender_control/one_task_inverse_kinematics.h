@@ -43,6 +43,15 @@ namespace bartender_control
 		OneTaskInverseKinematics();
 		~OneTaskInverseKinematics();
 		
+		bool init(hardware_interface::PositionJointInterface *robot, ros::NodeHandle &n);
+		void FrameToPose(KDL::Frame &frame, geometry_msgs::PoseStamped &pose);
+		void update(const ros::Time& time, const ros::Duration& period);
+		void commandCallback(const bartender_control::bartender_msg::ConstPtr &msg);
+		void param_update();
+		void configCallback(const bartender_control::cfg_msg::ConstPtr &msg);
+		void Error(geometry_msgs::PoseStamped& p_curr, geometry_msgs::PoseStamped& p_des, std::vector<double> &error);
+		Eigen::Matrix<double, 7, 1> potentialEnergy(KDL::JntArray q);
+		
 		struct quaternion_
 		{
 			KDL::Vector v;
@@ -52,15 +61,6 @@ namespace bartender_control
 		ros::NodeHandle pnh;
 		std::string ns_param;
 		std::string controller;
-
-		bool init(hardware_interface::PositionJointInterface *robot, ros::NodeHandle &n);
-		void FrameToPose(KDL::Frame &frame, geometry_msgs::PoseStamped &pose);
-		void update(const ros::Time& time, const ros::Duration& period);
-		void command(const bartender_control::bartender_msg::ConstPtr &msg);
-		void param_update();
-		void configCallback(const bartender_control::cfg_msg::ConstPtr &msg);
-		void Error(geometry_msgs::PoseStamped& p_curr, geometry_msgs::PoseStamped& p_des, std::vector<double> &error);
-		Eigen::Matrix<double, 7, 1> potentialEnergy(KDL::JntArray q);
 		
 		inline const char * const BoolToString(bool b)
 		{

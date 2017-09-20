@@ -62,7 +62,7 @@ namespace bartender_control
 	
 	des_pose_bag = nh_.advertise<geometry_msgs::PoseStamped>("des_pose", 250);
 
-        sub_bartender_cmd = nh_.subscribe("command", 250, &OneTaskInverseKinematics::command, this);
+        sub_bartender_cmd = nh_.subscribe("command", 250, &OneTaskInverseKinematics::commandCallback, this);
 	sub_bartender_config = nh_.subscribe("config",250, &OneTaskInverseKinematics::configCallback, this);
 
 	x_error.resize(6);
@@ -107,7 +107,7 @@ namespace bartender_control
     }
 
 
-    void OneTaskInverseKinematics::command(const bartender_control::bartender_msg::ConstPtr &msg)
+    void OneTaskInverseKinematics::commandCallback(const bartender_control::bartender_msg::ConstPtr &msg)
     {
 	
 	//************************** reading message from manager **************************
@@ -225,12 +225,12 @@ namespace bartender_control
             //cout<<ns_param<<endl;
             for (int i = 0; i < joint_handles_.size(); i++){
                 joint_des_states_.q(i) += period.toSec()*joint_des_states_.qdot(i);
-		/*cout<<"joint "<<i+1<<":"<<joint_des_states_.q(i)<<endl;
+		//cout<<"joint "<<i+1<<":"<<joint_des_states_.q(i)<<endl;
 		if (joint_des_states_.q(i) < joint_limits_.min(i))
                     joint_des_states_.q(i) = joint_limits_.min(i);
                 if (joint_des_states_.q(i) > joint_limits_.max(i))
                     joint_des_states_.q(i) = joint_limits_.max(i);
-		cout<<"SAT joint "<<i+1<<":"<<joint_des_states_.q(i)<<endl;*/
+		//cout<<"SAT joint "<<i+1<<":"<<joint_des_states_.q(i)<<endl;
 	    }
 	    
 	    geometry_msgs::PoseStamped msg_pose;

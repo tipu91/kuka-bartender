@@ -12,11 +12,12 @@ left_arm:
       - left_arm_a4_joint
       - left_arm_a5_joint
       - left_arm_a6_joint
-      - l_ef_joint
+      # - l_ef_joint
   bartender_control:
     type: bartender_control/OneTaskInverseKinematics
     root_name: bartender_anchor
-    tip_name: l_ef
+    # tip_name: left_hand_palm_link
+    tip_name: left_arm_7_link
   joint_impedance_control:
     type: lwr_controllers/JointImpedanceController
     root_name: bartender_anchor
@@ -54,11 +55,12 @@ right_arm:
       - right_arm_a4_joint
       - right_arm_a5_joint
       - right_arm_a6_joint
-      - r_ef_joint
+      # - r_ef_joint
   bartender_control:
     type: bartender_control/OneTaskInverseKinematics
     root_name: bartender_anchor
-    tip_name: r_ef
+    # tip_name: right_hand_palm_link
+    tip_name: right_arm_7_link
   joint_impedance_control:
     type: lwr_controllers/JointImpedanceController
     root_name: bartender_anchor

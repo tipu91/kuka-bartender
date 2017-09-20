@@ -42,7 +42,7 @@
         <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
             <param name="use_gui" value="$(arg gui)"/>
             <!-- listens to each part -->
-            <rosparam param="source_list">[/left_arm/joint_states,/left_hand/joint_states,/right_arm/joint_states,/right_hand/joint_states,/head/joint_states]</rosparam>
+            <rosparam param="source_list">[/left_arm/joint_states,/left_hand/joint_states,/right_arm/joint_states,/right_hand/joint_states]</rosparam>
         </node>
     </group>
 
@@ -102,7 +102,7 @@
         <param name="ns_arm" value="left_arm"/>
         <param name="class" value="bartender_control"/>
 
-        <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen"  args="joint_state_controller bartender_control"/>
+        <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen"  args="bartender_control joint_state_controller"/>
 	<node name="left_transf" pkg="tf" type="static_transform_publisher" args="0 0 0.15 0 0 0 /$(arg left_arm)_7_link /$(arg left_arm)/$(arg control)/EE 100"/>
    </group>
 
@@ -149,7 +149,7 @@
 	<param name="ns_arm" value="right_arm"/>
         <param name="class" value="bartender_control"/>
 
-        <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen"  args="joint_state_controller bartender_control"/>
+        <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen"  args="bartender_control joint_state_controller"/>
 	<node name="right_transf" pkg="tf" type="static_transform_publisher" args="0 0 0.15 0 0 0 /$(arg right_arm)_7_link /$(arg right_arm)/$(arg control)/EE 100"/>
     </group>
 
@@ -178,10 +178,10 @@
     <!-- TF for grasping -->
 
 
-<node name="right_grasping" pkg="tf" type="static_transform_publisher" args="-1.2 0.5 0.3 1.57 -3.14 -1.57 bartender_anchor right_grasp 100"/>
-<node name="left_grasping" pkg="tf" type="static_transform_publisher" args="-1.2 -0.5 0.3 1.57 -3.14 -1.57 bartender_anchor left_grasp 100"/>
-<node name="right_pouring" pkg="tf" type="static_transform_publisher" args="-0.85 0 0.3 1.57 -3.14 -1.57 bartender_anchor right_pour 100"/>
-<node name="left_pouring" pkg="tf" type="static_transform_publisher" args="-0.85 -0.2 0.2 1.57 -3.14 -1.57 bartender_anchor left_pour 100"/>
+<node name="right_grasping" pkg="tf" type="static_transform_publisher" args="-1.05 0.5 0.3 1.57 -3.14 -1.57 bartender_anchor right_grasp 100"/>
+<node name="left_grasping" pkg="tf" type="static_transform_publisher" args="-1.05 -0.5 0.3 1.57 -3.14 -1.57 bartender_anchor left_grasp 100"/>
+<node name="right_pouring" pkg="tf" type="static_transform_publisher" args="-0.7 0 0.3 1.57 -3.14 -1.57 bartender_anchor right_pour 100"/>
+<node name="left_pouring" pkg="tf" type="static_transform_publisher" args="-0.7 -0.2 0.2 1.57 -3.14 -1.57 bartender_anchor left_pour 100"/>
 
 <node name="pouring_rotation" pkg="tf" type="static_transform_publisher" args="0 0 0 -1.9 0 0 right_pour pouring 100"/>
 <node name="serve_rotation" pkg="tf" type="static_transform_publisher" args="0 0 0 1.9 0 0 left_pour serving 100"/>

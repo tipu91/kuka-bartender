@@ -37,20 +37,20 @@
 class BartenderManager {
 
 	public:
-	    BartenderManager();
-	    ~BartenderManager();
+	  
+		BartenderManager();
+		~BartenderManager();
 
-	    void checkCallback_right(const std_msgs::Float64MultiArray &msg_err);
-	    void checkCallback_left(const std_msgs::Float64MultiArray &msg_err);
-	    void checkCallback_right_initial(const geometry_msgs::Pose::ConstPtr &msg_init);
-	    void checkCallback_left_initial(const geometry_msgs::Pose::ConstPtr &msg_init);
-	    void checkCallbackPoseright(const geometry_msgs::PoseStamped::ConstPtr &msg_pose);
-	    void checkCallbackPoseleft(const geometry_msgs::PoseStamped::ConstPtr &msg_pose);
+		void checkCallback_right(const std_msgs::Float64MultiArray &msg_err);
+		void checkCallback_left(const std_msgs::Float64MultiArray &msg_err);
+		void checkCallback_right_initial(const geometry_msgs::Pose::ConstPtr &msg_init);
+		void checkCallback_left_initial(const geometry_msgs::Pose::ConstPtr &msg_init);
+		void checkCallbackPoseright(const geometry_msgs::PoseStamped::ConstPtr &msg_pose);
+		void checkCallbackPoseleft(const geometry_msgs::PoseStamped::ConstPtr &msg_pose);
 		
-		double *EulerToQuaternion(float R, float P, float Y);
 		void Init();
 		void Grasping(std::vector<int> action_value, std::string s);
-		void ToPose(std::string arm, std::string target, int action, ros::Publisher pub, bool stop, bool print);
+		void ToPose(std::string arm, std::string target, int action, ros::Publisher pub, bool run, bool print);
 		bool compare_error(double err[6], double thr_lin, double thr_rot);
 		void resetError(double *err);
 		
