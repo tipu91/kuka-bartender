@@ -171,7 +171,7 @@ int main(int argc, char **argv)
 		    }
 		    
 		        
-		    if( manager.compare_error(manager.error_right, 0.05, 0.5) )
+		    if( manager.compare_error(manager.error_right, 0.05, 0.1) )
 		    {
 			ROS_INFO("Pouring");
 			
@@ -262,7 +262,7 @@ int main(int argc, char **argv)
 		    
 		    break;
 		    
-		  // Shake action 
+		  // Serving action 
 		  case 7:
 		    
 		    if(select) {
@@ -274,7 +274,7 @@ int main(int argc, char **argv)
 		    }
 		    
 		        
-		    if( manager.compare_error(manager.error_left, 0.1, 0.1) )
+		    if( manager.compare_error(manager.error_left, 0.1, 0.3) )
 		    {
 			ROS_INFO("Serving");
 			
@@ -300,7 +300,7 @@ int main(int argc, char **argv)
 		    
 		    break;
 		    
-		  // Stop Pouring action 
+		  // Stop Serving action 
 		  case 8:
 		    
 		    if(select) {
