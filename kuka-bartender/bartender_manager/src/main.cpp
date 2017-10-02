@@ -171,7 +171,7 @@ int main(int argc, char **argv)
 		    }
 		    
 		        
-		    if( manager.compare_error(manager.error_right, 0.05, 0.1) )
+		    if( manager.compare_error(manager.error_right, 0.05, 0.5) )
 		    {
 			ROS_INFO("Pouring");
 			
