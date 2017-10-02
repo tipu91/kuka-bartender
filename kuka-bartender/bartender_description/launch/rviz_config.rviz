@@ -8,7 +8,7 @@ Panels:
         - /Axes2
         - /TF1
         - /TF1/Frames1
-      Splitter Ratio: 0.395349
+      Splitter Ratio: 0.735465
     Tree Height: 463
   - Class: rviz/Selection
     Name: Selection
@@ -774,7 +774,7 @@ Visualization Manager:
         l_ef:
           Value: false
         left_arm/bartender_control/EE:
-          Value: true
+          Value: false
         left_arm_1_link:
           Value: false
         left_arm_1_link_dummy:
@@ -824,7 +824,7 @@ Visualization Manager:
         left_arm_6_link_dummy_damping:
           Value: false
         left_arm_7_link:
-          Value: false
+          Value: true
         left_arm_7_link_dummy:
           Value: false
         left_arm_7_link_dummy_add_torque:
@@ -920,7 +920,7 @@ Visualization Manager:
         r_ef:
           Value: false
         right_arm/bartender_control/EE:
-          Value: true
+          Value: false
         right_arm_1_link:
           Value: false
         right_arm_1_link_dummy:
@@ -970,7 +970,7 @@ Visualization Manager:
         right_arm_6_link_dummy_damping:
           Value: false
         right_arm_7_link:
-          Value: false
+          Value: true
         right_arm_7_link_dummy:
           Value: false
         right_arm_7_link_dummy_add_torque:
@@ -1060,6 +1060,10 @@ Visualization Manager:
         right_hand_thumb_proximal_link:
           Value: false
         right_pour:
+          Value: true
+        serving:
+          Value: true
+        shaking:
           Value: true
         table_leg_0_link:
           Value: false
@@ -1195,7 +1199,10 @@ Visualization Manager:
             left_grasp:
               {}
             left_pour:
-              {}
+              serving:
+                {}
+              shaking:
+                {}
             right_arm_base_link:
               right_arm_1_link:
                 right_arm_2_link:
