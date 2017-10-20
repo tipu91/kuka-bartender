@@ -59,14 +59,15 @@ int main(int argc, char **argv)
 		    
 		    if(select) {
 		      select = false;
-		      manager.ToPose("right_arm", "right_grasp", action, manager.pub_bartender_cmd_right,true, false);
+		      manager.ToPoseClient("right_arm", "right_grasp", action, manager.cmd_service_right,true, false);
 		      ROS_INFO("Action 1");
+		      sleep(1);
 		    }
 
 		    if( manager.compare_error(manager.error_right, 0.05, 0.05) )
 		    {
 			ROS_INFO("ready for grasp");
-			manager.ToPose("right_arm", "right_grasp", action, manager.pub_bartender_cmd_right,false, false);
+			manager.ToPoseClient("right_arm", "right_grasp", action, manager.cmd_service_right,false, false);
 
 			while(action==1){
 			    std::cout << "Are You ready for grasping? (y/n) " << std::endl;
@@ -92,16 +93,19 @@ int main(int argc, char **argv)
 		    
 		    if(select) {
 		      select = false;
-		      manager.resetError(manager.error_right);
-		      manager.resetError(manager.error_left);
-		      manager.ToPose("left_arm", "left_grasp", action, manager.pub_bartender_cmd_left,true, false);
+		      manager.resetError(manager.error_right, 0.1);
+		      manager.resetError(manager.error_left, 0.1);
+		      manager.ToPoseClient("left_arm", "left_grasp", action, manager.cmd_service_left, true, false);
 		      ROS_INFO("Action 2");
+		      sleep(1);
 		    }
+		    
+		    ros::spinOnce();
 		    
 		    if( manager.compare_error(manager.error_left, 0.05, 0.05) )
 		    {
 			ROS_INFO("ready for grasp");
-			manager.ToPose("left_arm", "left_grasp", action, manager.pub_bartender_cmd_left,false, false);
+			manager.ToPoseClient("left_arm", "left_grasp", action, manager.cmd_service_left,false, false);
 
 			while(action==2){
 			    std::cout << "Are You ready for grasping? (y/n) " << std::endl;
@@ -127,19 +131,25 @@ int main(int argc, char **argv)
 		    
 		    if(select) {
 		      select = false;
-		      manager.resetError(manager.error_right);
-		      manager.resetError(manager.error_left);
-		      manager.ToPose("left_arm", "left_pour", action, manager.pub_bartender_cmd_left,true, false);
-		      manager.ToPose("right_arm", "right_pour", action, manager.pub_bartender_cmd_right,true, false);
+		      manager.resetError(manager.error_right, 0.2);
+		      manager.resetError(manager.error_left, 0.2);
+		      manager.ToPoseClient("left_arm", "left_pour", action, manager.cmd_service_left,true, false);
+		      manager.ToPoseClient("right_arm", "right_pour", action, manager.cmd_service_right,true, false);
 		      ROS_INFO("Action 3");
+		      sleep(1);
 		    }
-		        
+		    
+		    ros::spinOnce();
+		    
 		    if( manager.compare_error(manager.error_right, 0.08, 0.05) && manager.compare_error(manager.error_left, 0.08, 0.05) )
 		    {
 			ROS_INFO("ready for pouring");
 			
-			manager.ToPose("left_arm", "left_pour", action, manager.pub_bartender_cmd_left,false, false);
-			manager.ToPose("right_arm", "right_pour", action, manager.pub_bartender_cmd_right,false, false);
+			for(int i=0; i<6; i++)
+			  std::cout << "error " << i << ": " << manager.error_right[i] << std::endl;
+			
+			manager.ToPoseClient("left_arm", "left_pour", action, manager.cmd_service_left,false, false);
+			manager.ToPoseClient("right_arm", "right_pour", action, manager.cmd_service_right,false, false);
 
 			while(action==3){
 			    std::cout << "Are You ready for pouring? (y/n) " << std::endl;
@@ -164,18 +174,25 @@ int main(int argc, char **argv)
 		    
 		    if(select) {
 		      select = false;
-		      manager.resetError(manager.error_right);
-		      manager.resetError(manager.error_left);
-		      manager.ToPose("right_arm", "pouring", action, manager.pub_bartender_cmd_right,true, false);
+		      manager.resetError(manager.error_right, 0.6);
+		      manager.resetError(manager.error_left, 0.4);
+		      manager.ToPoseClient("right_arm", "pouring", action, manager.cmd_service_right,true, false);
 		      ROS_INFO("Action 4");
+		      sleep(1);
 		    }
 		    
-		        
-		    if( manager.compare_error(manager.error_right, 0.05, 0.5) )
+		    ros::spinOnce();
+		    
+		    std::cout << "rot error : " << manager.error_right[3] << " - " << manager.error_right[4] << " - " << manager.error_right[5] << std::endl;
+		    
+		    if( manager.compare_error_rot(manager.error_right, 0.5) )
 		    {
 			ROS_INFO("Pouring");
 			
-			manager.ToPose("right_arm", "pouring", action, manager.pub_bartender_cmd_right,false, false);
+			for(int i=0; i<6; i++)
+			  std::cout << "error " << i << ": " << manager.error_right[i] << std::endl;
+			
+			manager.ToPoseClient("right_arm", "pouring", action, manager.cmd_service_right,false, false);
 			
 			ros::Time Init_time = ros::Time::now();
 			ros::Duration duration;
@@ -203,18 +220,19 @@ int main(int argc, char **argv)
 		    
 		    if(select) {
 		      select = false;
-		      manager.resetError(manager.error_right);
-		      manager.resetError(manager.error_left);
-		      manager.ToPose("right_arm", "right_pour", action, manager.pub_bartender_cmd_right,true, false);
+		      manager.resetError(manager.error_right, 0.1);
+		      manager.ToPoseClient("right_arm", "right_pour", action, manager.cmd_service_right,true, false);
 		      ROS_INFO("Action 5");
+		      sleep(1);
 		    }
 		    
-		        
-		    if( manager.compare_error(manager.error_right, 0.1, 0.05) )
+		    ros::spinOnce();
+		    
+		    if( manager.compare_error_rot(manager.error_right, 0.1)  )
 		    {
 			ROS_INFO("ready for shaking");
 			
-			manager.ToPose("right_arm", "right_pour", action, manager.pub_bartender_cmd_right,false, false);
+			manager.ToPoseClient("right_arm", "right_pour", action, manager.cmd_service_right,false, false);
 			
 			while(action==5){
 			    std::cout << "Are You ready for shaking? (y/n) " << std::endl;
@@ -240,12 +258,14 @@ int main(int argc, char **argv)
 		    
 		    for(int i=1; i<=20; i++)
 		    {
-		      if(i%2 == 0) manager.ToPose("left_arm", "left_pour", action, manager.pub_bartender_cmd_left,true, false);
-		      else manager.ToPose("left_arm", "shaking", action, manager.pub_bartender_cmd_left,true, false);		      
+		      if(i%2 == 0) manager.ToPoseClient("left_arm", "left_pour", action, manager.cmd_service_left,true, false);
+		      else manager.ToPoseClient("left_arm", "shaking", action, manager.cmd_service_left,true, false);		      
 		      sleep(1);
 		    }
 		    
-		    manager.ToPose("left_arm", "left_pour", action, manager.pub_bartender_cmd_left,false, false);
+		    ros::spinOnce();
+		    
+		    manager.ToPoseClient("left_arm", "left_pour", action, manager.cmd_service_left,false, false);
 		    
 		    while(action==6){
 			    std::cout << "Are You ready for serving? (y/n) " << std::endl;
@@ -267,18 +287,25 @@ int main(int argc, char **argv)
 		    
 		    if(select) {
 		      select = false;
-		      manager.resetError(manager.error_right);
-		      manager.resetError(manager.error_left);
-		      manager.ToPose("left_arm", "serving", action, manager.pub_bartender_cmd_left,true, false);
+		      manager.resetError(manager.error_left, 0.5);
+		      manager.ToPoseClient("left_arm", "serving", action, manager.cmd_service_left,true, false);
 		      ROS_INFO("Action 7");
+		      sleep(1);
 		    }
 		    
-		        
-		    if( manager.compare_error(manager.error_left, 0.1, 0.3) )
+		    ros::spinOnce();
+		    
+		    std::cout << "rot error : " << manager.error_right[3] << " - " << manager.error_right[4] << " - " << manager.error_right[5] << std::endl;
+		    
+		    
+		    if( manager.compare_error_rot(manager.error_left, 0.2)  )
 		    {
 			ROS_INFO("Serving");
 			
-			manager.ToPose("left_arm", "serving", action, manager.pub_bartender_cmd_left,false, false);
+			for(int i=0; i<6; i++)
+			  std::cout << "error " << i << ": " << manager.error_right[i] << std::endl;
+			
+			manager.ToPoseClient("left_arm", "serving", action, manager.cmd_service_left,false, false);
 			
 			ros::Time Init_time = ros::Time::now();
 			ros::Duration duration;
@@ -305,18 +332,19 @@ int main(int argc, char **argv)
 		    
 		    if(select) {
 		      select = false;
-		      manager.resetError(manager.error_right);
-		      manager.resetError(manager.error_left);
-		      manager.ToPose("left_arm", "left_pour", action, manager.pub_bartender_cmd_left,true, false);
+		      manager.resetError(manager.error_left, 0.4);
+		      manager.ToPoseClient("left_arm", "left_pour", action, manager.cmd_service_left,true, false);
 		      ROS_INFO("Action 8");
+		      sleep(1);
 		    }
 		    
-		        
-		    if( manager.compare_error(manager.error_left, 0.1, 0.1) )
+		    ros::spinOnce();
+		    
+		    if( manager.compare_error_rot(manager.error_left, 0.1)  )
 		    {
 			ROS_INFO("stop serving");
 			
-			manager.ToPose("left_arm", "left_pour", action, manager.pub_bartender_cmd_left,false, false);
+			manager.ToPoseClient("left_arm", "left_pour", action, manager.cmd_service_left,false, false);
 			
 			select = true;
 			action = 9;
@@ -326,6 +354,14 @@ int main(int argc, char **argv)
 		    ros::spinOnce();
 		    
 		    break;
+		    
+		  case 9:
+		    
+		      ROS_INFO("Your drink is ready!!!");
+		      action = 0;
+		      
+		  break;
+		        
 		}
 		    
 		    

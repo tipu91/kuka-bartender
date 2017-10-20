@@ -28,6 +28,7 @@
 #include "std_msgs/Float64MultiArray.h"
 #include <tf/transform_listener.h>
 #include <geometry_msgs/Pose.h>
+#include <bartender_control/bartender_srv.h>
 
 #define		link7_to_palm	0.15		// m
 #define 	pouring_angle	(M_PI/2)	// rad
@@ -51,8 +52,10 @@ class BartenderManager {
 		void Init();
 		void Grasping(std::vector<int> action_value, std::string s);
 		void ToPose(std::string arm, std::string target, int action, ros::Publisher pub, bool run, bool print);
+		int ToPoseClient(std::string arm, std::string target, int action, ros::ServiceClient client, bool run, bool print);
 		bool compare_error(double err[6], double thr_lin, double thr_rot);
-		void resetError(double *err);
+		bool compare_error_rot(double err[6], double thr_rot);
+		void resetError(double *err, double err_);
 		
 		// config file
 		dynamic_reconfigure::Server<bartender_manager::managerConfig> server;
@@ -120,6 +123,9 @@ class BartenderManager {
 		
 		ros::Publisher joint_pub_l;
 		ros::Publisher joint_pub_r;
+		
+		ros::ServiceClient cmd_service_right;
+		ros::ServiceClient cmd_service_left;
 		
 		ros::Subscriber sub_bartender_err_right;
 		ros::Subscriber sub_bartender_err_left;

@@ -52,7 +52,7 @@
 
   <!-- LEFT SOFTHAND -->
   <xacro:soft_hand parent="left_arm_7_link" name="left_hand" left="true" withAdaptiveTransmission="true" useMimicTag="$(arg use_mimic_tag)">
-    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <origin xyz="0 0 0" rpy="0 0 -3.14"/>
   </xacro:soft_hand>
 
 

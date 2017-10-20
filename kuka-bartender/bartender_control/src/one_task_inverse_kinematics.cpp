@@ -62,8 +62,10 @@ namespace bartender_control
 	
 	des_pose_bag = nh_.advertise<geometry_msgs::PoseStamped>("des_pose", 250);
 
-        sub_bartender_cmd = nh_.subscribe("command", 250, &OneTaskInverseKinematics::commandCallback, this);
+        sub_bartender_cmd = nh_.subscribe("command", 50, &OneTaskInverseKinematics::commandCallback, this);
 	sub_bartender_config = nh_.subscribe("config",250, &OneTaskInverseKinematics::configCallback, this);
+	
+	cmd_server = nh_.advertiseService("command_srv", &OneTaskInverseKinematics::commandReceived, this);
 
 	x_error.resize(6);
 	
@@ -106,6 +108,30 @@ namespace bartender_control
       
     }
 
+    bool OneTaskInverseKinematics::commandReceived(bartender_srv::Request& req, bartender_srv::Response& res)
+    {
+
+	  x_des_pose.pose = req.des_frame;
+	
+	  if (req.run) cmd_flag_ = 1;
+	  if (!req.run) cmd_flag_ = 0;
+	  
+	  goal_ref = req.goal_tf;
+	  
+	  ns_param = req.arm;	
+	  
+	  action = req.action;
+	  
+	  x_error.clear();
+	  x_error.resize(6);
+	  
+	  
+	  cout << "received message from " << ns_param << " and ACTION = " << action << endl; 
+	
+	  res.resp = true;
+	  return true;
+    }
+
 
     void OneTaskInverseKinematics::commandCallback(const bartender_control::bartender_msg::ConstPtr &msg)
     {
@@ -125,7 +151,6 @@ namespace bartender_control
 	cout << "received message from " << ns_param << " and ACTION = " << action << endl; 
 	//**********************************************************************************
 	
-	return;
     }
 
 

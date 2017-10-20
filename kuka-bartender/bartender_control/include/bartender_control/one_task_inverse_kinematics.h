@@ -26,6 +26,8 @@
 #include <ros/ros.h>
 #include <time.h>
 
+#include<bartender_control/bartender_srv.h>
+
 #include <dynamic_reconfigure/server.h>
 
 #include <utils/pseudo_inversion.h>
@@ -47,6 +49,7 @@ namespace bartender_control
 		void FrameToPose(KDL::Frame &frame, geometry_msgs::PoseStamped &pose);
 		void update(const ros::Time& time, const ros::Duration& period);
 		void commandCallback(const bartender_control::bartender_msg::ConstPtr &msg);
+		bool commandReceived(bartender_srv::Request& req, bartender_srv::Response& res);
 		void param_update();
 		void configCallback(const bartender_control::cfg_msg::ConstPtr &msg);
 		void Error(geometry_msgs::PoseStamped& p_curr, geometry_msgs::PoseStamped& p_des, std::vector<double> &error);
@@ -70,6 +73,7 @@ namespace bartender_control
 		ros::Subscriber sub_bartender_cmd, sub_bartender_config;
 		
 		ros::Subscriber sub_bartender_goal, sub_bartender_tf;
+		ros::ServiceServer cmd_server;
 		
 		ros::Publisher pub_check_error;
 		ros::Publisher pub_check_initial;

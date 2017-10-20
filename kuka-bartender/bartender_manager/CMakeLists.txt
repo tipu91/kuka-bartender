@@ -18,11 +18,6 @@ generate_dynamic_reconfigure_options(
     cfg/bartender.cfg
 )
 
-add_service_files(
-  FILES
-  bartender_srv.srv
-)
-
 catkin_package(
  CATKIN_DEPENDS roscpp std_msgs dynamic_reconfigure bartender_control
 )

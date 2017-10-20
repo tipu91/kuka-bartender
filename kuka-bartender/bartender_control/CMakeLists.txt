@@ -22,6 +22,11 @@ add_message_files(
   cfg_msg.msg
 )
 
+add_service_files(
+  FILES
+  bartender_srv.srv
+)
+
 ## Generate dynamic reconfigure parameters in the 'cfg' folder
 ##generate_dynamic_reconfigure_options(
 ##    cfg/controller.cfg

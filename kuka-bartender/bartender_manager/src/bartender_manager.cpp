@@ -8,8 +8,11 @@ BartenderManager::BartenderManager()
     f = boost::bind(&BartenderManager::config_callback, this, _1, _2);   
     server.setCallback(f);
     
-    pub_bartender_cmd_right = n_.advertise<bartender_control::bartender_msg>("/right_arm/bartender_control/command", 250);
-    pub_bartender_cmd_left = n_.advertise<bartender_control::bartender_msg>("/left_arm/bartender_control/command", 250);
+    pub_bartender_cmd_right = n_.advertise<bartender_control::bartender_msg>("/right_arm/bartender_control/command", 50, true);
+    pub_bartender_cmd_left = n_.advertise<bartender_control::bartender_msg>("/left_arm/bartender_control/command", 50, true);
+    
+    cmd_service_right = n_.serviceClient<bartender_control::bartender_srv>("/right_arm/bartender_control/command_srv");
+    cmd_service_left = n_.serviceClient<bartender_control::bartender_srv>("/left_arm/bartender_control/command_srv");
     
     pub_bartender_config_right = n_.advertise<bartender_control::cfg_msg>("/right_arm/bartender_control/config", 250);
     pub_bartender_config_left = n_.advertise<bartender_control::cfg_msg>("/left_arm/bartender_control/config", 250);
@@ -50,9 +53,9 @@ void BartenderManager::config_callback(bartender_manager::managerConfig& config,
     
 }
 
-void BartenderManager::resetError(double *err)
+void BartenderManager::resetError(double *err, double err_)
 {
-    for(int i=0; i<6; i++) err[i] = 0.1;
+    for(int i=0; i<6; i++) err[i] = err_;
     
     return;
 }
@@ -236,6 +239,42 @@ void BartenderManager::ToPose(std::string arm, std::string target, int action,  
 	}
 }
 
+int BartenderManager::ToPoseClient(std::string arm, std::string target, int action, ros::ServiceClient client, bool run, bool print)
+{
+  bartender_control::bartender_srv cmd_srv;  
+  
+  cmd_srv.request.action = action;
+  cmd_srv.request.arm = arm;  
+  cmd_srv.request.goal_tf = target;    
+  cmd_srv.request.des_frame = pose[target];
+  cmd_srv.request.run = run;
+  
+  if (client.call(cmd_srv))
+  {
+    if (cmd_srv.response.resp)
+    {
+      ROS_INFO("service call -> success");
+      
+      if(run && print) {
+	  cout<<arm<<endl;
+	  ROS_INFO("DES_POSE x=%f | y=%f | z=%f", cmd_srv.request.des_frame.position.x, cmd_srv.request.des_frame.position.y, cmd_srv.request.des_frame.position.z);
+      }
+	
+      return 1;
+    }
+    else
+    {
+      ROS_INFO("service call -> NO success");
+      return -1;
+    }
+  }
+  else
+  {
+    ROS_INFO("service call -> NOT call");
+    return -2;
+  }
+}
+
 void BartenderManager::Grasping(std::vector<int> action_value, std::string s)
 {
 	ROS_INFO("Hand function!!");
@@ -273,4 +312,15 @@ bool BartenderManager::compare_error(double err[6], double thr_lin, double thr_r
 
 	return near_p;
 
+}
+
+bool BartenderManager::compare_error_rot(double err[6], double thr_rot)
+{
+	static bool near_p;
+
+	if ( (fabs(err[3]) < thr_rot) && (fabs(err[4]) < thr_rot) && (fabs(err[5]) < thr_rot) ) near_p = true;
+	else near_p = false;
+
+	return near_p;
+  
 }
